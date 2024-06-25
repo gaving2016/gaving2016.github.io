@@ -1,0 +1,68 @@
+---
+layout: post
+title: centos7安装最新版本rabbitmq
+date: 2022-12-03 23:07:03.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Linux
+tags: []
+meta:
+  _edit_last: '1'
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2022/12/03/centos7%e5%ae%89%e8%a3%85%e6%9c%80%e6%96%b0%e7%89%88%e6%9c%acrabbitmq/"
+---
+<p>第一步：安装erlang</p>
+<p>yum install socat -y</p>
+<p><a href="https://www.rabbitmq.com/which-erlang.html">rabbitmq与erlang版本号对比表</a></p>
+<p>erlang下载地址： <a href="https://www.erlang.org/downloads">https://www.erlang.org/downloads</a></p>
+<p>或者 <a href="https://github.com/erlang/otp/releases/tag/OTP-25.1.2">https://github.com/erlang/otp/releases/tag/OTP-25.1.2</a></p>
+<p>下载<a class="Truncate" href="https://github.com/erlang/otp/releases/download/OTP-25.1.2/otp_src_25.1.2.tar.gz" rel="nofollow" data-turbo="false" data-view-component="true"><span class="Truncate-text text-bold" data-view-component="true">otp_src_25.1.2.tar.gz</span></a></p>
+<div class="d-flex flex-auto flex-justify-end col-md-4 ml-3 ml-md-0 mt-1 mt-md-0 pl-1 pl-md-0" data-view-component="true">上传到服务器上进行解压，进入到目录<span style="font-family: Consolas, Monaco, monospace;">otp_src_25.1.2</span>执行以下命令，生成makefile文件。</div>
+<div data-view-component="true">
+<pre class="brush:bash;toolbar:false">./configure</pre>
+<p>执行如下命令，编译安装erlang。</p>
+<pre class="brush:bash;toolbar:false">make
+make install</pre>
+<p>测试已完成编译的软件</p>
+<p>1)执行如下命令，进入erl环境。</p>
+<pre class="brush:bash;toolbar:false">erl</pre>
+<p>当系统回显类似如下信息时，表示进入erl环境。</p>
+<p>erl<br />
+Erlang/OTP 25 [erts-13.1.2] [source] [64-bit] [smp:1:1] [ds:1:1:10] [async-threads:1]</p>
+<p>Eshell V13.1.2 (abort with ^G)</p>
+<p>第二步：安装rabbitmq</p>
+</div>
+<p>rabbitmq下载地址：<a href="https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.11.4/rabbitmq-server-generic-unix-3.11.4.tar.xz">https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.11.4/rabbitmq-server-generic-unix-3.11.4.tar.xz</a></p>
+<p>下载后上传服务器进行解压， cd rabbitmq-server-3.11.4</p>
+<p>增加配置文件: vi etc/rabbitmq/rabbitmq.config</p>
+<pre class="lang-erlang hljs"><span class="hljs-comment">%% this is a comment</span>
+[
+  {rabbit, [
+      {tcp_listeners, [<span class="hljs-number">5673</span>]}
+    ]
+  }
+].
+添加环境变量 vi /etc/profile
+export PATH=$PATH:<span style="color: #ff0000;">/usr/local/rabbitmq</span>/sbin (mq安装位置)
+source /etc/profile
+启动rabbitmq
+rabbitmq-server -detached
+echo "/usr/local/rabbitmq/sbin/rabbitmq-server -detached" &gt;&gt; /etc/rc.local #添加开机自启动
+启动管理界面
+rabbitmq-plugins enable rabbitmq_management
+查看rabbitmq状态
+rabbitmqctl status
+停止rabbitmq 
+rabbitmqctl stop
+
+</pre>

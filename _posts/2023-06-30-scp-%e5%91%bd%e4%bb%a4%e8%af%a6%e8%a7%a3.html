@@ -1,0 +1,125 @@
+---
+layout: post
+title: SCP 命令详解
+date: 2023-06-30 14:11:08.000000000 +08:00
+type: post
+parent_id: '0'
+published: true
+password: ''
+status: publish
+categories:
+- Linux
+tags: []
+meta:
+  _edit_last: '1'
+  _comment_timeout: '0,60'
+  blocksy_post_meta_options: a:1:{s:17:"styles_descriptor";a:3:{s:6:"styles";a:3:{s:7:"desktop";s:0:"";s:6:"tablet";s:0:"";s:6:"mobile";s:0:"";}s:12:"google_fonts";a:0:{}s:7:"version";i:5;}}
+author:
+  login: gavin
+  email: 519077334@qq.com
+  display_name: gavin
+  first_name: ''
+  last_name: ''
+permalink: "/index.php/2023/06/30/scp-%e5%91%bd%e4%bb%a4%e8%af%a6%e8%a7%a3/"
+---
+<div id="chatWindow">
+<div class="message-bubble">
+<div class="message-text response">
+<p>SCP（Secure Copy）是一个用于在本地和远程主机之间进行安全文件传输的命令行工具。它使用SSH协议进行加密和身份验证，可以在不同的操作系统之间传输文件。</p>
+<p>SCP命令的基本语法如下：</p>
+<pre><code>scp [选项] [源文件] [目标文件]
+</code></pre>
+<p>常用的选项包括：</p>
+<ul>
+<li><code>-r</code>：递归复制整个目录。</li>
+<li><code>-p</code>：保留源文件的修改时间、访问时间和权限。</li>
+<li><code>-q</code>：安静模式，不显示进度信息。</li>
+<li><code>-P &lt;port&gt;</code>：指定远程主机上的SSH端口号，默认为22。</li>
+<li><code>-i &lt;identity_file&gt;</code>：指定身份验证所使用的私钥文件。</li>
+</ul>
+<p>源文件和目标文件的格式可以是：</p>
+<ul>
+<li>本地文件路径：<code>/path/to/local/file</code></li>
+<li>远程主机上的文件路径：<code>user@host:/path/to/remote/file</code></li>
+<li>远程主机上的文件路径（使用非默认SSH端口号）：<code>user@host -p &lt;port&gt;:/path/to/remote/file</code></li>
+</ul>
+<p>以下是一些常见的用法示例：</p>
+<ol start="1">
+<li>从本地复制文件到远程主机：
+<pre><code>scp /path/to/local/file user@<span class="hljs-attr">host</span>:<span class="hljs-regexp">/path/</span>to/remote/file
+</code></pre>
+</li>
+<li>从远程主机复制文件到本地：
+<pre><code>scp user@<span class="hljs-attr">host</span>:<span class="hljs-regexp">/path/</span>to/remote/file /path/to/local/file
+</code></pre>
+</li>
+<li>递归复制整个目录：
+<pre><code>scp -r /path/to/local/directory user@<span class="hljs-attr">host</span>:<span class="hljs-regexp">/path/</span>to/remote/directory
+</code></pre>
+</li>
+<li>从远程主机复制整个目录到本地：
+<pre><code>scp -r user@<span class="hljs-attr">host</span>:<span class="hljs-regexp">/path/</span>to/remote/directory /path/to/local/directory
+</code></pre>
+</li>
+</ol>
+<p>请注意，SCP命令是单向的，即只能从源文件复制到目标文件，不能同时复制到多个目标。如果需要同时复制到多个目标，可以考虑使用rsync命令。</p>
+</div>
+<div class="answer">
+<div id="chatWindow">
+<div class="message-bubble">
+<div class="message-text response">
+<p>rsync是一个强大的文件同步和备份工具，它可以在本地和远程主机之间进行文件传输，并且只传输已更改的部分，从而提高传输效率。</p>
+<p>rsync命令的基本语法如下：</p>
+<pre><code>rsync [选项] [源路径] [目标路径]
+</code></pre>
+<p>常用的选项包括：</p>
+<ul>
+<li><code>-a, --archive</code>：归档模式，保留文件的所有属性，递归复制目录。</li>
+<li><code>-r, --recursive</code>：递归复制目录。</li>
+<li><code>-v, --verbose</code>：详细输出。</li>
+<li><code>-z, --compress</code>：压缩传输数据。</li>
+<li><code>-P</code>：显示传输进度和保留部分文件。</li>
+<li><code>-e, --rsh=COMMAND</code>：指定远程shell程序，例如ssh。</li>
+</ul>
+<p>源路径和目标路径的格式可以是：</p>
+<ul>
+<li>本地路径：<code>/path/to/local/file</code>或<code>/path/to/local/directory</code></li>
+<li>远程主机路径：<code>user@host:/path/to/remote/file</code>或<code>user@host:/path/to/remote/directory</code></li>
+</ul>
+<p>以下是一些常见的用法示例：</p>
+<ol start="1">
+<li>从本地复制文件到远程主机：
+<pre><code>rsync /path/to/local/file user@<span class="hljs-attr">host</span>:<span class="hljs-regexp">/path/</span>to/remote/file
+</code></pre>
+</li>
+<li>从远程主机复制文件到本地：
+<pre><code>rsync user@<span class="hljs-attr">host</span>:<span class="hljs-regexp">/path/</span>to/remote/file /path/to/local/file
+</code></pre>
+</li>
+<li>递归复制整个目录：
+<pre><code>rsync -r /path/to/local/directory user@<span class="hljs-attr">host</span>:<span class="hljs-regexp">/path/</span>to/remote/directory
+</code></pre>
+</li>
+<li>从远程主机复制整个目录到本地：
+<pre><code>rsync -r user@<span class="hljs-attr">host</span>:<span class="hljs-regexp">/path/</span>to/remote/directory /path/to/local/directory
+</code></pre>
+</li>
+<li>使用SSH密钥进行远程传输：
+<pre><code>rsync -e <span class="hljs-string">"ssh -i /path/to/private/key"</span> /path/to/local/file user@<span class="hljs-attr">host</span>:<span class="hljs-regexp">/path/</span>to/remote/file
+</code></pre>
+</li>
+</ol>
+<p>rsync还支持其他高级功能，如过滤规则、增量备份等。你可以使用<code>man rsync</code>命令查看rsync的完整文档，了解更多选项和用法。</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="function">
+<div class="others">
+<div class="left">
+<div class="settings common dropup"></div>
+</div>
+</div>
+</div>
