@@ -10,10 +10,10 @@
 ############################
 
 # Name of website
-title: My website
+title: 格物致知
 
 # Your name to show in the footer
-author: Some Person
+author: Gavin
 
 ###############################################
 # --- List of links in the navigation bar --- #
@@ -24,7 +24,7 @@ navbar-links:
   Resources:
     - Beautiful Jekyll: "https://beautifuljekyll.com"
     - Learn markdown: "https://www.markdowntutorial.com/"
-  Author's home: "https://deanattali.com"
+  Author's home: "https://blog.gaving.top"
 
 ################
 # --- Logo --- #
@@ -95,12 +95,12 @@ rss-description: This website is a virtual proof that I'm awesome
 share-links-active:
   twitter: true
   facebook: true
-  linkedin: true
+  linkedin: false
   vk: false
 
 # How to display the link to your website in the footer
 # Remove this if you don't want a link in the footer
-url-pretty: "MyWebsite.com"
+url-pretty: "blog.gaving.top"
 
 # Add the website title to the title of every page
 title-on-all-pages: true
